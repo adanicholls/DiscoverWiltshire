@@ -1,69 +1,73 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import Leaderboard from "@/components/Leaderboard";
+import { EVENTS } from "@/lib/data";
 
-export default function Home() {
+export default async function HomePage({ searchParams }: PageProps<"/">) {
+  const params = await searchParams;
+  const q = typeof params.q === "string" ? params.q : undefined;
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <Header />
+
+      <main className="wrap">
+        <div className="masthead">
+          <div className="masthead-brand">
+            <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+              <circle cx="20" cy="20" r="17" fill="none" stroke="#C1502E" strokeWidth="1.5" />
+              <path
+                d="M20 13v14M15 17l5 3 5-3M14 22l6 3 6-3"
+                stroke="#4B6B3A"
+                strokeWidth="1.3"
+                fill="none"
+                strokeLinecap="round"
+              />
+            </svg>
+            <div className="masthead-tagline">the friend who knows Wiltshire best</div>
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="tabs">
+          <span className="tab active">All</span>
+          <a className="tab" href="/eat-drink">Eat &amp; drink</a>
+          <a className="tab" href="/stay">Stay</a>
+          <a className="tab" href="/things-to-do">Things to do</a>
+          <a className="tab" href="/trades">Trades &amp; services</a>
+          <a className="tab" href="/shops">Shops</a>
+        </div>
+        <div className="period-toggle">
+          <button className="active">Today</button>
+          <span>·</span>
+          <button>This week</button>
+          <span>·</span>
+          <button>This month</button>
+        </div>
+
+        <Leaderboard showCategoryTag limit={8} searchQuery={q} />
+        <p className="placeholder-note">
+          The time toggle above (Today / This week / This month) is a visual placeholder — wiring it up needs vote
+          timestamps, which means real data rather than the localStorage demo layer this app still uses for votes.
+        </p>
+
+        <h2 className="section-heading">what&apos;s on this week</h2>
+        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 28 }}>
+          {EVENTS.map((ev) => (
+            <div className="card" key={ev.name} style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+              <span>{ev.name}</span>
+              <span style={{ opacity: 0.6 }}>{ev.when}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="cta-band">
+          <h3>own a business in Wiltshire?</h3>
+          <p>get discovered by the people already looking for you</p>
+          <a className="btn btn-primary" href="/list-your-business">List your business</a>
         </div>
       </main>
-    </div>
+
+      <Footer />
+    </>
   );
 }
