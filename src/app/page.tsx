@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Leaderboard from "@/components/Leaderboard";
+import CategoryTabs from "@/components/CategoryTabs";
 import { EVENTS } from "@/lib/data";
 
 export default async function HomePage({ searchParams }: PageProps<"/">) {
@@ -28,14 +29,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
           </div>
         </div>
 
-        <div className="tabs">
-          <span className="tab active">All</span>
-          <a className="tab" href="/eat-drink">Eat &amp; drink</a>
-          <a className="tab" href="/stay">Stay</a>
-          <a className="tab" href="/things-to-do">Things to do</a>
-          <a className="tab" href="/trades">Trades &amp; services</a>
-          <a className="tab" href="/shops">Shops</a>
-        </div>
+        <CategoryTabs active="/" />
         <div className="period-toggle">
           <button className="active">Today</button>
           <span>·</span>
