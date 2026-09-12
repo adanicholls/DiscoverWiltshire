@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Leaderboard from "@/components/Leaderboard";
 import CategoryTabs from "@/components/CategoryTabs";
-import { EVENTS } from "@/lib/data";
+import EventsList from "@/components/EventsList";
 
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
@@ -45,13 +45,8 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
         </p>
 
         <h2 className="section-heading">what&apos;s on this week</h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 28 }}>
-          {EVENTS.map((ev) => (
-            <div className="card" key={ev.name} style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-              <span>{ev.name}</span>
-              <span style={{ opacity: 0.6 }}>{ev.when}</span>
-            </div>
-          ))}
+        <div style={{ marginBottom: 28 }}>
+          <EventsList />
         </div>
 
         <div className="cta-band">

@@ -234,4 +234,10 @@ export const Store = {
     });
     if (error) throw error;
   },
+
+  async getEvents(): Promise<{ name: string; when: string }[]> {
+    const { data, error } = await supabase.from("events").select("name, when_text");
+    if (error) throw error;
+    return (data ?? []).map((row) => ({ name: row.name, when: row.when_text }));
+  },
 };
