@@ -10,6 +10,13 @@ out/
 .env.local
 .env.*.local
 
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
 # Editor/OS
 .DS_Store
 Thumbs.db
