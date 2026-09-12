@@ -46,8 +46,8 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
 
         <Leaderboard showCategoryTag limit={8} searchQuery={q} />
         <p className="placeholder-note">
-          The time toggle above (Today / This week / This month) is a visual placeholder — wiring it up needs vote
-          timestamps, which means real data rather than the localStorage demo layer this app still uses for votes.
+          The time toggle above (Today / This week / This month) is still just visual — votes now carry real
+          timestamps in the database, so filtering by period is just a query away, not yet wired up to these buttons.
         </p>
 
         <h2 className="section-heading">what&apos;s on this week</h2>

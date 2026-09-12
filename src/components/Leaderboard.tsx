@@ -2,12 +2,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CATEGORY_LABELS, type Business } from "@/lib/data";
-import { Store } from "@/lib/store";
-
-interface RankedBusiness extends Business {
-  liveVotes: number;
-}
+import { CATEGORY_LABELS } from "@/lib/data";
+import { Store, type LiveBusiness } from "@/lib/store";
 
 interface LeaderboardProps {
   category?: string;
@@ -18,70 +14,69 @@ interface LeaderboardProps {
   searchQuery?: string;
 }
 
-function rank(list: Business[]): RankedBusiness[] {
-  const withVotes = list.map((b) => ({ ...b, liveVotes: Store.votesFor(b) }));
+function rank(list: LiveBusiness[]): LiveBusiness[] {
   // Simplified promoted-slot model: promoted items are pinned above organic
   // ranking. A real build should cap this at 4 sellable slots per list and
   // backfill any unsold slots with the next-best organic business.
-  const promoted = withVotes.filter((b) => b.promoted).sort((a, b) => b.liveVotes - a.liveVotes);
-  const organic = withVotes.filter((b) => !b.promoted).sort((a, b) => b.liveVotes - a.liveVotes);
+  const promoted = list.filter((b) => b.promoted).sort((a, b) => b.liveVotes - a.liveVotes);
+  const organic = list.filter((b) => !b.promoted).sort((a, b) => b.liveVotes - a.liveVotes);
   return promoted.concat(organic);
 }
 
-function search(all: Business[], query: string): RankedBusiness[] {
-  const q = query.trim().toLowerCase();
-  const matches = all.filter((b) => {
-    const category = (CATEGORY_LABELS[b.category] || b.category).toLowerCase();
-    return [b.name, b.tagline, b.description, b.location, category].some((field) =>
-      (field || "").toLowerCase().includes(q)
-    );
-  });
-  return matches
-    .map((b) => ({ ...b, liveVotes: Store.votesFor(b) }))
-    .sort((a, b) => b.liveVotes - a.liveVotes);
-}
-
 export default function Leaderboard({ category, categories, showCategoryTag, limit, searchQuery }: LeaderboardProps) {
-  const [businesses, setBusinesses] = useState<RankedBusiness[] | null>(null);
-  const [votedIds, setVotedIds] = useState<string[]>([]);
+  const [businesses, setBusinesses] = useState<LiveBusiness[] | null>(null);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    const all = Store.getAllBusinesses();
+    let cancelled = false;
 
-    let ranked: RankedBusiness[];
-    if (searchQuery && searchQuery.trim()) {
-      ranked = search(all, searchQuery);
-    } else {
-      let list = all;
-      if (category) {
-        list = list.filter((b) => b.category === category);
-      } else if (categories) {
-        list = list.filter((b) => categories.includes(b.category));
+    async function load() {
+      setLoadError(false);
+      try {
+        let list: LiveBusiness[];
+        if (searchQuery && searchQuery.trim()) {
+          list = await Store.searchBusinesses(searchQuery, CATEGORY_LABELS);
+          list = list.sort((a, b) => b.liveVotes - a.liveVotes);
+        } else {
+          list = await Store.getApprovedBusinesses({ category, categories });
+          list = rank(list);
+          if (limit) list = list.slice(0, limit);
+        }
+        if (!cancelled) setBusinesses(list);
+      } catch (err) {
+        console.error("Failed to load businesses:", err);
+        if (!cancelled) setLoadError(true);
       }
-      ranked = rank(list);
-      if (limit) ranked = ranked.slice(0, limit);
     }
 
-    // Store is a temporary localStorage shim standing in for Supabase (see
-    // src/lib/store.ts) — reading it is an external-system sync, which is
-    // exactly what effects are for, but it does mean an unavoidable extra
-    // render on mount. This whole effect goes away once votes/businesses
-    // come from a real data fetch instead.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setBusinesses(ranked);
-    setVotedIds(Store.getVotedIds());
+    load();
+    return () => {
+      cancelled = true;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [category, categories?.join(","), limit, searchQuery]);
 
-  function handleVote(id: string) {
-    if (!Store.addVote(id)) return;
-    setVotedIds(Store.getVotedIds());
+  async function handleVote(id: string) {
+    const didVote = await Store.addVote(id);
+    if (!didVote) return;
+    // Store.hasVoted(id) is now true (addVote records it synchronously in
+    // localStorage before resolving), so re-rendering is all this needs -
+    // each row reads Store.hasVoted directly for its disabled state.
     setBusinesses((prev) => prev && prev.map((b) => (b.id === id ? { ...b, liveVotes: b.liveVotes + 1 } : b)));
   }
 
+  if (loadError) {
+    return (
+      <div className="leaderboard">
+        <div className="card" style={{ textAlign: "center", opacity: 0.6, fontSize: 13 }}>
+          Couldn&apos;t load the leaderboard right now — try refreshing.
+        </div>
+      </div>
+    );
+  }
+
   if (businesses === null) {
-    // Avoids a flash of "nothing here" before localStorage-derived state
-    // is read on mount (server-rendered markup has no vote data yet).
+    // Avoids a flash of "nothing here" before the first fetch resolves.
     return <div className="leaderboard" />;
   }
 
@@ -119,7 +114,7 @@ export default function Leaderboard({ category, categories, showCategoryTag, lim
           <button
             className="upvote"
             aria-label={`Upvote ${b.name}`}
-            disabled={votedIds.includes(b.id)}
+            disabled={Store.hasVoted(b.id)}
             onClick={() => handleVote(b.id)}
           >
             <span className="upvote-arrow" aria-hidden="true">▲</span>

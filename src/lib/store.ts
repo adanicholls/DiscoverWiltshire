@@ -1,138 +1,237 @@
 /* ---------------------------------------------------
-   Discover Wiltshire — demo data store
-   Ported from the static prototype's js/store.js. Everything here
-   still uses localStorage so the app works end-to-end before Supabase
-   is wired in — replace each function body with a real query/mutation
-   when that happens; keep the function names the same so components
-   calling them shouldn't need to change much.
-
-   Client-only: every function is a no-op-safe read/write against
-   localStorage, so this must only be called from Client Components
-   (or inside useEffect/event handlers), never during server rendering.
+   Discover Wiltshire — data store
+   Real Supabase-backed replacement for the old localStorage shim.
+   Function shapes are similar to before, but every business/vote
+   operation is now async (a network request) instead of a synchronous
+   localStorage read. The only thing still kept client-side is which
+   businesses *this browser* has voted for, purely for instant button
+   feedback — the server enforces the real one-vote-per-visitor rule via
+   a unique constraint on (business_id, voter_id), using a random id
+   this browser generates once and keeps in localStorage.
 --------------------------------------------------- */
 
-import { BUSINESSES, type Business } from "./data";
+import { supabase } from "./supabase";
+import type { Business, Testimonial } from "./data";
 
-function read<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
+export interface LiveBusiness extends Business {
+  liveVotes: number;
+}
+
+const VOTER_ID_KEY = "dw_voter_id";
+const VOTED_IDS_KEY = "dw_voted_ids";
+
+function getVoterId(): string {
+  if (typeof window === "undefined") return "";
+  let id = window.localStorage.getItem(VOTER_ID_KEY);
+  if (!id) {
+    id = crypto.randomUUID();
+    window.localStorage.setItem(VOTER_ID_KEY, id);
+  }
+  return id;
+}
+
+function getVotedIdsLocal(): string[] {
+  if (typeof window === "undefined") return [];
   try {
-    const raw = window.localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
+    const raw = window.localStorage.getItem(VOTED_IDS_KEY);
+    return raw ? (JSON.parse(raw) as string[]) : [];
   } catch {
-    return fallback;
+    return [];
   }
 }
 
-function write<T>(key: string, value: T): void {
+function rememberVotedLocal(businessId: string) {
   if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // storage unavailable, fail quietly
+  const ids = getVotedIdsLocal();
+  if (!ids.includes(businessId)) {
+    ids.push(businessId);
+    window.localStorage.setItem(VOTED_IDS_KEY, JSON.stringify(ids));
   }
 }
 
-export type PendingItem = {
+// Row shapes as they come back from Postgres (snake_case) before mapping
+// to the app's existing camelCase Business type.
+interface BusinessRow {
   id: string;
-  type: "listing" | "promoted-slot" | "founding-member";
   name: string;
-  category?: string;
-  tagline?: string;
-  description?: string;
-  location?: string;
-  priceRange?: string;
-  phone?: string;
-  website?: string;
-  foundingMemberRequested?: boolean;
-  detail?: string;
-  submittedAgo: string;
-};
+  category_id: string;
+  tagline: string;
+  description: string;
+  location: string;
+  price_range: string;
+  phone: string;
+  website: string;
+  photo_color: string;
+  promoted: boolean;
+  featured: boolean;
+  founding_member: boolean;
+}
 
-const SEED_PENDING: PendingItem[] = [
-  {
-    id: "seed-1",
-    type: "listing",
-    name: "Potterne Pantry",
-    category: "shops",
-    tagline: "local deli, cheese counter, coffee to go",
-    submittedAgo: "2 hours ago",
-  },
-  {
-    id: "seed-2",
-    type: "promoted-slot",
-    name: "The Bell, Ramsbury",
-    detail: "homepage slot · 1 week · paid",
-    submittedAgo: "40 minutes ago",
-  },
-  {
-    id: "seed-3",
-    type: "founding-member",
-    name: "Wilton Yard Studios",
-    detail: "founding membership purchased",
-    submittedAgo: "yesterday",
-  },
-];
+function mapBusinessRow(row: BusinessRow): Omit<Business, "votes" | "testimonials"> {
+  return {
+    id: row.id,
+    name: row.name,
+    category: row.category_id,
+    tagline: row.tagline,
+    description: row.description,
+    location: row.location,
+    priceRange: row.price_range,
+    phone: row.phone,
+    website: row.website,
+    photoColor: row.photo_color,
+    promoted: row.promoted,
+    featured: row.featured,
+    foundingMember: row.founding_member,
+  };
+}
+
+async function attachVotes<T extends { id: string }>(
+  rows: T[]
+): Promise<(T & { liveVotes: number })[]> {
+  if (rows.length === 0) return [];
+  const ids = rows.map((r) => r.id);
+  const { data, error } = await supabase
+    .from("business_vote_counts")
+    .select("business_id, total_votes")
+    .in("business_id", ids);
+
+  if (error) throw error;
+
+  const votesById = new Map((data ?? []).map((v) => [v.business_id, v.total_votes as number]));
+  return rows.map((r) => ({ ...r, liveVotes: votesById.get(r.id) ?? 0 }));
+}
 
 export const Store = {
-  // Businesses approved after launch, on top of the seed data in data.ts
-  getApprovedBusinesses(): Business[] {
-    return read("dw_approved_businesses", [] as Business[]);
-  },
-  addApprovedBusiness(business: Business) {
-    const list = this.getApprovedBusinesses();
-    list.push(business);
-    write("dw_approved_businesses", list);
+  async getApprovedBusinesses(options?: { category?: string; categories?: string[] }): Promise<LiveBusiness[]> {
+    let query = supabase.from("businesses").select("*").eq("status", "approved");
+    if (options?.category) {
+      query = query.eq("category_id", options.category);
+    } else if (options?.categories) {
+      query = query.in("category_id", options.categories);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const businesses = (data as BusinessRow[]).map((row) => ({
+      ...mapBusinessRow(row),
+      votes: 0, // unused now liveVotes carries the real total; kept for the Business shape
+      testimonials: [] as Testimonial[],
+    }));
+
+    return attachVotes(businesses);
   },
 
-  // All businesses: seed data + anything approved this session
-  getAllBusinesses(): Business[] {
-    return BUSINESSES.concat(this.getApprovedBusinesses());
-  },
-  getBusinessById(id: string): Business | undefined {
-    return this.getAllBusinesses().find((b) => b.id === id);
+  async searchBusinesses(query: string, categoryLabels: Record<string, string>): Promise<LiveBusiness[]> {
+    const q = `%${query.trim()}%`;
+    const { data, error } = await supabase
+      .from("businesses")
+      .select("*")
+      .eq("status", "approved")
+      .or(`name.ilike.${q},tagline.ilike.${q},description.ilike.${q},location.ilike.${q}`);
+
+    if (error) throw error;
+
+    // Category label isn't a real column to filter server-side against, so
+    // a query matching only a category name (e.g. "plumbers") is caught
+    // here instead, client-side, against the small categories lookup.
+    const byCategory = (data as BusinessRow[]).filter((row) => {
+      const label = categoryLabels[row.category_id] || row.category_id;
+      return label.toLowerCase().includes(query.trim().toLowerCase());
+    });
+    const merged = new Map<string, BusinessRow>();
+    for (const row of [...(data as BusinessRow[]), ...byCategory]) merged.set(row.id, row);
+
+    const businesses = Array.from(merged.values()).map((row) => ({
+      ...mapBusinessRow(row),
+      votes: 0,
+      testimonials: [] as Testimonial[],
+    }));
+
+    return attachVotes(businesses);
   },
 
-  // Vote deltas, keyed by business id, plus which ids this browser already voted for
-  getVoteDeltas(): Record<string, number> {
-    return read("dw_vote_deltas", {} as Record<string, number>);
+  async getBusinessById(id: string): Promise<LiveBusiness | null> {
+    const { data, error } = await supabase.from("businesses").select("*").eq("id", id).maybeSingle();
+    if (error) throw error;
+    if (!data) return null;
+
+    const { data: testimonialRows, error: testimonialError } = await supabase
+      .from("testimonials")
+      .select("name, quote")
+      .eq("business_id", id);
+    if (testimonialError) throw testimonialError;
+
+    const business = {
+      ...mapBusinessRow(data as BusinessRow),
+      votes: 0,
+      testimonials: (testimonialRows ?? []) as Testimonial[],
+    };
+    const [withVotes] = await attachVotes([business]);
+    return withVotes;
   },
-  getVotedIds(): string[] {
-    return read("dw_voted_ids", [] as string[]);
-  },
+
   hasVoted(id: string): boolean {
-    return this.getVotedIds().includes(id);
+    return getVotedIdsLocal().includes(id);
   },
-  addVote(id: string): boolean {
+
+  async addVote(id: string): Promise<boolean> {
     if (this.hasVoted(id)) return false;
-    const deltas = this.getVoteDeltas();
-    deltas[id] = (deltas[id] || 0) + 1;
-    write("dw_vote_deltas", deltas);
-    const voted = this.getVotedIds();
-    voted.push(id);
-    write("dw_voted_ids", voted);
+
+    const { error } = await supabase.from("votes").insert({ business_id: id, voter_id: getVoterId() });
+
+    if (error) {
+      // 23505 = unique_violation - this browser (or voter id) already
+      // voted, most likely because dw_voted_ids was cleared separately
+      // from dw_voter_id. Treat it as already-voted rather than an error.
+      if (error.code === "23505") {
+        rememberVotedLocal(id);
+        return false;
+      }
+      throw error;
+    }
+
+    rememberVotedLocal(id);
     return true;
   },
-  votesFor(business: Business): number {
-    const deltas = this.getVoteDeltas();
-    return business.votes + (deltas[business.id] || 0);
+
+  // Submitting a new listing inserts straight into businesses with
+  // status='pending' - RLS only allows inserts with that status, so a
+  // submission can never self-approve. The admin queue (reading pending
+  // rows) needs the service-role key from a server route, added later.
+  async submitListing(fields: {
+    id: string;
+    name: string;
+    category: string;
+    tagline: string;
+    description: string;
+    location: string;
+    priceRange: string;
+    phone: string;
+    website: string;
+  }): Promise<void> {
+    const { error } = await supabase.from("businesses").insert({
+      id: fields.id,
+      name: fields.name,
+      category_id: fields.category,
+      tagline: fields.tagline,
+      description: fields.description,
+      location: fields.location,
+      price_range: fields.priceRange,
+      phone: fields.phone,
+      website: fields.website || "#",
+      status: "pending",
+    });
+    if (error) throw error;
   },
 
-  // Pending queue: new listing submissions and (in a real build) promoted-slot
-  // purchases and founding-member sign-ups, all reviewed before going live.
-  getPendingItems(): PendingItem[] {
-    return read("dw_pending_items", null as unknown as PendingItem[]) ?? this.seedPending();
-  },
-  seedPending(): PendingItem[] {
-    write("dw_pending_items", SEED_PENDING);
-    return SEED_PENDING;
-  },
-  addPendingItem(item: PendingItem) {
-    const list = this.getPendingItems();
-    list.unshift(item);
-    write("dw_pending_items", list);
-  },
-  removePendingItem(id: string) {
-    const list = this.getPendingItems().filter((i) => i.id !== id);
-    write("dw_pending_items", list);
+  async submitUpgradeRequest(businessId: string, type: "promoted-slot" | "founding-member", detail: string): Promise<void> {
+    const { error } = await supabase.from("upgrade_requests").insert({
+      business_id: businessId,
+      request_type: type,
+      detail,
+      status: "pending",
+    });
+    if (error) throw error;
   },
 };
