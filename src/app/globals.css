@@ -409,11 +409,19 @@ img { max-width: 100%; display: block; }
 .home-layout {
   display: grid;
   grid-template-columns: 1fr 300px;
-  gap: 32px;
+  grid-template-rows: auto 1fr;
+  column-gap: 32px;
+  row-gap: 14px;
   align-items: start;
 }
 
-.home-sidebar { position: sticky; top: 24px; }
+/* The controls row (period toggle + location dropdown) sits only in the
+   left column, above the leaderboard - so .home-main and .home-sidebar
+   share the row below it and start level with each other, and the
+   dropdown ends above the leaderboard rather than above the sidebar. */
+.home-controls { grid-column: 1; grid-row: 1; }
+.home-main { grid-column: 1; grid-row: 2; }
+.home-sidebar { grid-column: 2; grid-row: 2; position: sticky; top: 24px; }
 
 .sidebar-card {
   background: var(--bg);
@@ -449,6 +457,7 @@ img { max-width: 100%; display: block; }
 
 @media (max-width: 860px) {
   .home-layout { grid-template-columns: 1fr; }
+  .home-controls, .home-main, .home-sidebar { grid-column: 1; grid-row: auto; }
   .home-sidebar { position: static; }
 }
 
