@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Leaderboard from "@/components/Leaderboard";
@@ -31,27 +32,37 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
           </div>
         </div>
 
-        <CategoryTabs active="/" />
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-          <div className="period-toggle" style={{ paddingBottom: 0 }}>
-            <button className="active">Today</button>
-            <span>·</span>
-            <button>This week</button>
-            <span>·</span>
-            <button>This month</button>
+        <div className="home-layout">
+          <div className="home-main">
+            <CategoryTabs active="/" />
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+              <div className="period-toggle" style={{ paddingBottom: 0 }}>
+                <button className="active">Today</button>
+                <span>·</span>
+                <button>This week</button>
+                <span>·</span>
+                <button>This month</button>
+              </div>
+              <LocationFilter />
+            </div>
+
+            <Leaderboard showCategoryTag limit={8} searchQuery={q} town={town} />
+            <p className="placeholder-note">
+              The time toggle above (Today / This week / This month) is still just visual — votes now carry real
+              timestamps in the database, so filtering by period is just a query away, not yet wired up to these
+              buttons.
+            </p>
           </div>
-          <LocationFilter />
-        </div>
 
-        <Leaderboard showCategoryTag limit={8} searchQuery={q} town={town} />
-        <p className="placeholder-note">
-          The time toggle above (Today / This week / This month) is still just visual — votes now carry real
-          timestamps in the database, so filtering by period is just a query away, not yet wired up to these buttons.
-        </p>
-
-        <h2 className="section-heading">what&apos;s on this week</h2>
-        <div style={{ marginBottom: 28 }}>
-          <EventsList />
+          <aside className="home-sidebar">
+            <div className="sidebar-card">
+              <div className="sidebar-card-header">
+                <h2 className="section-heading">what&apos;s on</h2>
+                <Link href="/whats-on">See all →</Link>
+              </div>
+              <EventsList />
+            </div>
+          </aside>
         </div>
 
         <div className="cta-band">
