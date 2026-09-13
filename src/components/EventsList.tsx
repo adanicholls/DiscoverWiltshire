@@ -16,22 +16,10 @@ export default async function EventsList({ limit = 4 }: { limit?: number }) {
 
   return (
     <div>
-      {events.map((ev, i) => {
+      {events.map((ev) => {
         const { weekday, day, month } = formatEventDate(ev.startsAt);
         return (
-          <Link
-            href="/whats-on"
-            key={ev.id}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 12,
-              padding: "10px 0",
-              borderTop: i === 0 ? "none" : "1px solid var(--border)",
-              textDecoration: "none",
-              color: "inherit",
-            }}
-          >
+          <Link href="/whats-on" key={ev.id} className="event-side-row">
             <div style={{ textAlign: "center", minWidth: 32 }}>
               <div style={{ fontSize: 9, textTransform: "uppercase", opacity: 0.6 }}>{weekday}</div>
               <div style={{ fontFamily: "var(--font-voice)", fontSize: 17, lineHeight: 1.1 }}>{day}</div>

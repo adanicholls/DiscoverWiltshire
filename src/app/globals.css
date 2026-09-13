@@ -416,7 +416,7 @@ img { max-width: 100%; display: block; }
 .home-sidebar { position: sticky; top: 24px; }
 
 .sidebar-card {
-  background: var(--surface);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 16px;
@@ -431,6 +431,20 @@ img { max-width: 100%; display: block; }
 }
 .sidebar-card-header .section-heading { margin: 0; }
 .sidebar-card-header a { font-size: 12px; opacity: 0.65; white-space: nowrap; }
+
+.event-side-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 -10px;
+  padding: 10px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s;
+}
+.event-side-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+.event-side-row:hover { background: var(--surface); }
 .sidebar-card-header a:hover { opacity: 1; }
 
 @media (max-width: 860px) {

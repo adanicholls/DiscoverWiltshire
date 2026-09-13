@@ -32,20 +32,20 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
           </div>
         </div>
 
+        <CategoryTabs active="/" />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+          <div className="period-toggle" style={{ paddingBottom: 0 }}>
+            <button className="active">Today</button>
+            <span>·</span>
+            <button>This week</button>
+            <span>·</span>
+            <button>This month</button>
+          </div>
+          <LocationFilter />
+        </div>
+
         <div className="home-layout">
           <div className="home-main">
-            <CategoryTabs active="/" />
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-              <div className="period-toggle" style={{ paddingBottom: 0 }}>
-                <button className="active">Today</button>
-                <span>·</span>
-                <button>This week</button>
-                <span>·</span>
-                <button>This month</button>
-              </div>
-              <LocationFilter />
-            </div>
-
             <Leaderboard showCategoryTag limit={8} searchQuery={q} town={town} />
             <p className="placeholder-note">
               The time toggle above (Today / This week / This month) is still just visual — votes now carry real
