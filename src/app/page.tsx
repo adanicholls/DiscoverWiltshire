@@ -60,7 +60,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
                 <h2 className="section-heading">what&apos;s on</h2>
                 <Link href="/whats-on">See all →</Link>
               </div>
-              <EventsList />
+              <EventsList limit={3} />
             </div>
           </aside>
         </div>

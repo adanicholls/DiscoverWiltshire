@@ -7,7 +7,7 @@ import { formatEventDate } from "@/lib/eventDate";
  * borrows from producthunt.com's "Upcoming events" panel next to its
  * ranked list. The full grouped calendar lives at /whats-on
  * (see EventCalendar). */
-export default async function EventsList({ limit = 4 }: { limit?: number }) {
+export default async function EventsList({ limit = 3 }: { limit?: number }) {
   const events = await Store.getUpcomingEvents(limit);
 
   if (events.length === 0) {
