@@ -58,6 +58,7 @@ interface BusinessRow {
   tagline: string;
   description: string;
   location: string;
+  town_id: string | null;
   price_range: string;
   phone: string;
   website: string;
@@ -75,6 +76,7 @@ function mapBusinessRow(row: BusinessRow): Omit<Business, "votes" | "testimonial
     tagline: row.tagline,
     description: row.description,
     location: row.location,
+    town: row.town_id,
     priceRange: row.price_range,
     phone: row.phone,
     website: row.website,
@@ -102,12 +104,19 @@ async function attachVotes<T extends { id: string }>(
 }
 
 export const Store = {
-  async getApprovedBusinesses(options?: { category?: string; categories?: string[] }): Promise<LiveBusiness[]> {
+  async getApprovedBusinesses(options?: {
+    category?: string;
+    categories?: string[];
+    town?: string;
+  }): Promise<LiveBusiness[]> {
     let query = supabase.from("businesses").select("*").eq("status", "approved");
     if (options?.category) {
       query = query.eq("category_id", options.category);
     } else if (options?.categories) {
       query = query.in("category_id", options.categories);
+    }
+    if (options?.town) {
+      query = query.eq("town_id", options.town);
     }
 
     const { data, error } = await query;
@@ -122,16 +131,22 @@ export const Store = {
     return attachVotes(businesses);
   },
 
-  async searchBusinesses(query: string, categoryLabels: Record<string, string>): Promise<LiveBusiness[]> {
+  async searchBusinesses(
+    query: string,
+    options: { categoryLabels: Record<string, string>; townLabels: Record<string, string>; town?: string }
+  ): Promise<LiveBusiness[]> {
     const q = `%${query.trim()}%`;
     const needle = query.trim().toLowerCase();
 
-    // Category label isn't a real column, so a query matching only a
-    // category name (e.g. "accountant") is resolved against the small
-    // static categories lookup first, then included as an extra
-    // category_id filter in the same query - not a second round-trip,
-    // and not limited to categories already present in a text match.
-    const matchingCategoryIds = Object.entries(categoryLabels)
+    // Category/town labels aren't real columns, so a query matching only
+    // a category or town name (e.g. "accountant", "devizes") is resolved
+    // against the small static lookups first, then included as extra
+    // filters in the same query - not a second round-trip, and not
+    // limited to values already present in a plain text match.
+    const matchingCategoryIds = Object.entries(options.categoryLabels)
+      .filter(([, label]) => label.toLowerCase().includes(needle))
+      .map(([id]) => id);
+    const matchingTownIds = Object.entries(options.townLabels)
       .filter(([, label]) => label.toLowerCase().includes(needle))
       .map(([id]) => id);
 
@@ -139,12 +154,18 @@ export const Store = {
     if (matchingCategoryIds.length > 0) {
       filters.push(`category_id.in.(${matchingCategoryIds.join(",")})`);
     }
+    if (matchingTownIds.length > 0) {
+      filters.push(`town_id.in.(${matchingTownIds.join(",")})`);
+    }
 
-    const { data, error } = await supabase
-      .from("businesses")
-      .select("*")
-      .eq("status", "approved")
-      .or(filters.join(","));
+    let dbQuery = supabase.from("businesses").select("*").eq("status", "approved").or(filters.join(","));
+    // The town filter (an explicit dropdown choice) narrows the match
+    // further, on top of whatever the free-text query already found.
+    if (options.town) {
+      dbQuery = dbQuery.eq("town_id", options.town);
+    }
+
+    const { data, error } = await dbQuery;
 
     if (error) throw error;
 
@@ -212,6 +233,7 @@ export const Store = {
     tagline: string;
     description: string;
     location: string;
+    town: string;
     priceRange: string;
     phone: string;
     website: string;
@@ -223,6 +245,7 @@ export const Store = {
       tagline: fields.tagline,
       description: fields.description,
       location: fields.location,
+      town_id: fields.town,
       price_range: fields.priceRange,
       phone: fields.phone,
       website: fields.website || "#",

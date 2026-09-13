@@ -1,17 +1,49 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { TRADE_CATEGORIES } from "@/lib/data";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useRef, useState } from "react";
+import { TRADE_CATEGORIES, TOWNS } from "@/lib/data";
 
 type MenuKey = "none" | "explore" | "business";
 
 const HOVER_CLOSE_DELAY = 150; // tolerates the cursor briefly leaving between button and panel
 
+// useSearchParams() opts a page into dynamic rendering unless whatever
+// calls it sits behind a Suspense boundary — needed here specifically
+// because Header (via this) is used on statically-generated pages like
+// /trades/[slug] and /towns/[slug]. Isolated into its own component so
+// only this part needs the boundary, not all of Header.
+function HeaderSearchInput({ onSubmit }: { onSubmit: () => void }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  return (
+    <input
+      type="search"
+      id="site-search"
+      className="search-box"
+      placeholder="Search Discover Wiltshire…"
+      aria-label="Search Discover Wiltshire"
+      onKeyDown={(e) => {
+        const value = e.currentTarget.value.trim();
+        if (e.key === "Enter" && value) {
+          onSubmit();
+          // Preserves an active town filter (only ever set on the
+          // homepage) across a new search, rather than a search
+          // silently dropping it.
+          const town = searchParams.get("town");
+          const qs = new URLSearchParams({ q: value });
+          if (town) qs.set("town", town);
+          router.push("/?" + qs.toString());
+        }
+      }}
+    />
+  );
+}
+
 export default function Header() {
   const pathname = usePathname();
-  const router = useRouter();
   const [openMenu, setOpenMenu] = useState<MenuKey>("none");
   const [mobileOpen, setMobileOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -19,7 +51,7 @@ export default function Header() {
 
   const exploreActive =
     pathname === "/" ||
-    ["/eat-drink", "/stay", "/things-to-do", "/shops", "/trades"].some(
+    ["/eat-drink", "/stay", "/things-to-do", "/shops", "/trades", "/towns"].some(
       (p) => pathname === p || pathname.startsWith(p + "/")
     );
   const advertiseActive = pathname === "/list-your-business" || pathname === "/pricing";
@@ -102,20 +134,9 @@ export default function Header() {
             </Link>
           </nav>
 
-          <input
-            type="search"
-            id="site-search"
-            className="search-box"
-            placeholder="Search Discover Wiltshire…"
-            aria-label="Search Discover Wiltshire"
-            onKeyDown={(e) => {
-              const value = e.currentTarget.value.trim();
-              if (e.key === "Enter" && value) {
-                closeAll();
-                router.push("/?q=" + encodeURIComponent(value));
-              }
-            }}
-          />
+          <Suspense fallback={<input type="search" className="search-box" placeholder="Search Discover Wiltshire…" aria-label="Search Discover Wiltshire" disabled />}>
+            <HeaderSearchInput onSubmit={closeAll} />
+          </Suspense>
 
           <div className="nav-utility">
             <span className="sign-in">Sign in</span>
@@ -166,6 +187,22 @@ export default function Header() {
           </div>
           <Link className="mega-trades-all" href="/trades" onClick={closeAll}>
             Browse all trades &amp; services →
+          </Link>
+        </div>
+
+        <div className="mega-trades">
+          <Link className="mega-trades-heading" href="/towns" onClick={closeAll}>
+            Browse by town
+          </Link>
+          <div className="mega-trades-grid">
+            {TOWNS.map((town) => (
+              <Link key={town.id} className="mega-trades-link" href={`/towns/${town.id}`} onClick={closeAll}>
+                {town.label}
+              </Link>
+            ))}
+          </div>
+          <Link className="mega-trades-all" href="/towns" onClick={closeAll}>
+            See all towns →
           </Link>
         </div>
       </div>

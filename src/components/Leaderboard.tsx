@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CATEGORY_LABELS } from "@/lib/data";
+import { CATEGORY_LABELS, TOWN_LABELS } from "@/lib/data";
 import { Store, type LiveBusiness } from "@/lib/store";
 
 interface LeaderboardProps {
   category?: string;
   categories?: string[];
+  /** Restricts to one town (its nearest-major-town grouping, not the free-text location). */
+  town?: string;
   showCategoryTag?: boolean;
   limit?: number;
   /** When set, overrides category/categories and searches every business. */
@@ -23,7 +25,7 @@ function rank(list: LiveBusiness[]): LiveBusiness[] {
   return promoted.concat(organic);
 }
 
-export default function Leaderboard({ category, categories, showCategoryTag, limit, searchQuery }: LeaderboardProps) {
+export default function Leaderboard({ category, categories, town, showCategoryTag, limit, searchQuery }: LeaderboardProps) {
   const [businesses, setBusinesses] = useState<LiveBusiness[] | null>(null);
   const [loadError, setLoadError] = useState(false);
 
@@ -35,10 +37,10 @@ export default function Leaderboard({ category, categories, showCategoryTag, lim
       try {
         let list: LiveBusiness[];
         if (searchQuery && searchQuery.trim()) {
-          list = await Store.searchBusinesses(searchQuery, CATEGORY_LABELS);
+          list = await Store.searchBusinesses(searchQuery, { categoryLabels: CATEGORY_LABELS, townLabels: TOWN_LABELS, town });
           list = list.sort((a, b) => b.liveVotes - a.liveVotes);
         } else {
-          list = await Store.getApprovedBusinesses({ category, categories });
+          list = await Store.getApprovedBusinesses({ category, categories, town });
           list = rank(list);
           if (limit) list = list.slice(0, limit);
         }
@@ -54,7 +56,7 @@ export default function Leaderboard({ category, categories, showCategoryTag, lim
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, categories?.join(","), limit, searchQuery]);
+  }, [category, categories?.join(","), town, limit, searchQuery]);
 
   async function handleVote(id: string) {
     const didVote = await Store.addVote(id);

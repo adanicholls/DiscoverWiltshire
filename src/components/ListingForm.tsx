@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CATEGORY_LABELS_CORE, DIRECT_CATEGORY_PAGES, TRADE_CATEGORIES } from "@/lib/data";
+import { CATEGORY_LABELS_CORE, DIRECT_CATEGORY_PAGES, TRADE_CATEGORIES, TOWNS } from "@/lib/data";
 import { Store } from "@/lib/store";
 import { slugify } from "@/lib/slug";
 
@@ -11,6 +11,7 @@ interface Errors {
   category?: boolean;
   tagline?: boolean;
   location?: boolean;
+  town?: boolean;
 }
 
 export default function ListingForm() {
@@ -19,6 +20,7 @@ export default function ListingForm() {
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
   const [location, setLocation] = useState("");
+  const [town, setTown] = useState("");
   const [priceRange, setPriceRange] = useState("");
   const [phone, setPhone] = useState("");
   const [website, setWebsite] = useState("");
@@ -35,6 +37,7 @@ export default function ListingForm() {
       category: !category,
       tagline: !tagline.trim(),
       location: !location.trim(),
+      town: !town,
     };
     setErrors(newErrors);
     if (Object.values(newErrors).some(Boolean)) return;
@@ -50,6 +53,7 @@ export default function ListingForm() {
         tagline: tagline.trim(),
         description: description.trim(),
         location: location.trim(),
+        town,
         priceRange,
         phone: phone.trim(),
         website: website.trim(),
@@ -140,8 +144,23 @@ export default function ListingForm() {
 
       <div className="field">
         <label htmlFor="biz-location">Location</label>
-        <input id="biz-location" type="text" placeholder="e.g. Marlborough" value={location} onChange={(e) => setLocation(e.target.value)} />
+        <input id="biz-location" type="text" placeholder="e.g. Coombe Bissett" value={location} onChange={(e) => setLocation(e.target.value)} />
+        <div className="hint">The specific place — village, street, or town — shown on your profile.</div>
         {errors.location && <div className="err" style={{ display: "block" }}>Add a location</div>}
+      </div>
+
+      <div className="field">
+        <label htmlFor="biz-town">Nearest town</label>
+        <select id="biz-town" value={town} onChange={(e) => setTown(e.target.value)}>
+          <option value="">Choose the nearest major town</option>
+          {TOWNS.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+        <div className="hint">Used to group you into the right town&apos;s rankings — pick whichever&apos;s closest.</div>
+        {errors.town && <div className="err" style={{ display: "block" }}>Choose the nearest town</div>}
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>

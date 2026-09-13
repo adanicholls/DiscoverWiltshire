@@ -19,6 +19,7 @@ export interface Business {
   tagline: string;
   description: string;
   location: string;
+  town: string | null;
   priceRange: string;
   phone: string;
   website: string;
@@ -28,6 +29,11 @@ export interface Business {
   foundingMember: boolean;
   photoColor: string;
   testimonials: Testimonial[];
+}
+
+export interface Town {
+  id: string;
+  label: string;
 }
 
 export interface TradeCategory {
@@ -94,3 +100,29 @@ export const CATEGORY_LABELS: Record<string, string> = {
 export const CATEGORY_SPONSORS: Record<string, string> = {
   "eat-drink": "Kennet Valley Brewery",
 };
+
+// Wiltshire's major towns, for the town hub pages and the location
+// filter - a fixed list rather than a free-text field, same reasoning
+// as TRADE_CATEGORIES. Businesses also keep a free-text `location` for
+// display precision (e.g. "Coombe Bissett"); `town` is the nearest
+// entry here, used for grouping and filtering.
+export const TOWNS: Town[] = [
+  { id: "salisbury", label: "Salisbury" },
+  { id: "trowbridge", label: "Trowbridge" },
+  { id: "chippenham", label: "Chippenham" },
+  { id: "devizes", label: "Devizes" },
+  { id: "marlborough", label: "Marlborough" },
+  { id: "warminster", label: "Warminster" },
+  { id: "westbury", label: "Westbury" },
+  { id: "melksham", label: "Melksham" },
+  { id: "calne", label: "Calne" },
+  { id: "amesbury", label: "Amesbury" },
+  { id: "bradford-on-avon", label: "Bradford-on-Avon" },
+  { id: "corsham", label: "Corsham" },
+  { id: "malmesbury", label: "Malmesbury" },
+  { id: "royal-wootton-bassett", label: "Royal Wootton Bassett" },
+  { id: "tidworth", label: "Tidworth" },
+  { id: "pewsey", label: "Pewsey" },
+];
+
+export const TOWN_LABELS: Record<string, string> = Object.fromEntries(TOWNS.map((t) => [t.id, t.label]));

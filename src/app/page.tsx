@@ -2,11 +2,13 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Leaderboard from "@/components/Leaderboard";
 import CategoryTabs from "@/components/CategoryTabs";
+import LocationFilter from "@/components/LocationFilter";
 import EventsList from "@/components/EventsList";
 
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
   const q = typeof params.q === "string" ? params.q : undefined;
+  const town = typeof params.town === "string" ? params.town : undefined;
 
   return (
     <>
@@ -30,15 +32,18 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
         </div>
 
         <CategoryTabs active="/" />
-        <div className="period-toggle">
-          <button className="active">Today</button>
-          <span>·</span>
-          <button>This week</button>
-          <span>·</span>
-          <button>This month</button>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+          <div className="period-toggle" style={{ paddingBottom: 0 }}>
+            <button className="active">Today</button>
+            <span>·</span>
+            <button>This week</button>
+            <span>·</span>
+            <button>This month</button>
+          </div>
+          <LocationFilter />
         </div>
 
-        <Leaderboard showCategoryTag limit={8} searchQuery={q} />
+        <Leaderboard showCategoryTag limit={8} searchQuery={q} town={town} />
         <p className="placeholder-note">
           The time toggle above (Today / This week / This month) is still just visual — votes now carry real
           timestamps in the database, so filtering by period is just a query away, not yet wired up to these buttons.
