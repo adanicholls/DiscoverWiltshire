@@ -2,18 +2,19 @@
 
 import { useState, useTransition } from "react";
 import { approveListing, declineListing } from "@/app/admin/actions";
-import { CATEGORY_LABELS, TOWN_LABELS } from "@/lib/data";
+import { TOWN_LABELS } from "@/lib/data";
 
 interface Props {
   id: string;
   name: string;
   categoryId: string;
+  categoryLabel: string;
   townId: string | null;
   tagline: string;
   createdAt: string;
 }
 
-export default function PendingListingRow({ id, name, categoryId, townId, tagline, createdAt }: Props) {
+export default function PendingListingRow({ id, name, categoryLabel, townId, tagline, createdAt }: Props) {
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState<"approved" | "declined" | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +44,7 @@ export default function PendingListingRow({ id, name, categoryId, townId, taglin
           <span style={{ fontSize: 14, fontWeight: 500 }}>{name}</span>
         </div>
         <div style={{ fontSize: 12, opacity: 0.65 }}>
-          {CATEGORY_LABELS[categoryId] || categoryId}
+          {categoryLabel}
           {townId ? ` · ${TOWN_LABELS[townId] || townId}` : ""} · {tagline}
         </div>
         <div style={{ fontSize: 11, opacity: 0.5, marginTop: 2 }}>submitted {new Date(createdAt).toLocaleString()}</div>

@@ -26,6 +26,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Link className="nav-item" href="/admin/businesses">
               Businesses
             </Link>
+            <Link className="nav-item" href="/admin/categories">
+              Categories
+            </Link>
           </nav>
           <div className="nav-utility">
             <span className="sign-in" style={{ opacity: 0.6 }}>{user?.email}</span>

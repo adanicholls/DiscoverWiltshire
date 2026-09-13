@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CATEGORY_LABELS, TOWN_LABELS } from "@/lib/data";
+import { CATEGORY_LABELS_CORE, TOWN_LABELS } from "@/lib/data";
 import { Store, type LiveBusiness } from "@/lib/store";
 
 interface LeaderboardProps {
@@ -28,6 +28,13 @@ function rank(list: LiveBusiness[]): LiveBusiness[] {
 export default function Leaderboard({ category, categories, town, showCategoryTag, limit, searchQuery }: LeaderboardProps) {
   const [businesses, setBusinesses] = useState<LiveBusiness[] | null>(null);
   const [loadError, setLoadError] = useState(false);
+  // Starts with just the four static core labels so an early search still
+  // works; Store.getCategoryLabels() fills in trade categories once loaded.
+  const [categoryLabels, setCategoryLabels] = useState<Record<string, string>>(CATEGORY_LABELS_CORE);
+
+  useEffect(() => {
+    Store.getCategoryLabels().then(setCategoryLabels).catch(() => {});
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -37,7 +44,7 @@ export default function Leaderboard({ category, categories, town, showCategoryTa
       try {
         let list: LiveBusiness[];
         if (searchQuery && searchQuery.trim()) {
-          list = await Store.searchBusinesses(searchQuery, { categoryLabels: CATEGORY_LABELS, townLabels: TOWN_LABELS, town });
+          list = await Store.searchBusinesses(searchQuery, { categoryLabels, townLabels: TOWN_LABELS, town });
           list = list.sort((a, b) => b.liveVotes - a.liveVotes);
         } else {
           list = await Store.getApprovedBusinesses({ category, categories, town });
@@ -56,7 +63,7 @@ export default function Leaderboard({ category, categories, town, showCategoryTa
       cancelled = true;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [category, categories?.join(","), town, limit, searchQuery]);
+  }, [category, categories?.join(","), town, limit, searchQuery, categoryLabels]);
 
   async function handleVote(id: string) {
     const didVote = await Store.addVote(id);
@@ -109,7 +116,7 @@ export default function Leaderboard({ category, categories, town, showCategoryTa
               {b.featured && <span className="tag tag-featured">Featured</span>}
             </div>
             <div className="lb-meta">
-              {showCategoryTag ? `${CATEGORY_LABELS[b.category] || b.category} · ` : ""}
+              {showCategoryTag ? `${categoryLabels[b.category] || b.category} · ` : ""}
               {b.tagline}
             </div>
           </div>

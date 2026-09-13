@@ -5,28 +5,34 @@ import Footer from "@/components/Footer";
 import CategoryTabs from "@/components/CategoryTabs";
 import TradeChips from "@/components/TradeChips";
 import Leaderboard from "@/components/Leaderboard";
-import { CATEGORY_LABELS, TRADE_CATEGORIES } from "@/lib/data";
+import { Store } from "@/lib/store";
 
 // One generic page serves every trade category via /trades/<slug>, instead
-// of a hand-built page per category — see TRADE_CATEGORIES in lib/data.ts.
-// Pre-rendering all known slugs at build time keeps them fast without
-// needing anything dynamic in the URL structure itself.
-export function generateStaticParams() {
-  return TRADE_CATEGORIES.map((c) => ({ slug: c.id }));
+// of a hand-built page per category. Categories are admin-editable (see
+// /admin/categories) so they're fetched from Supabase rather than a static
+// list — generateStaticParams only pre-renders whatever exists at build
+// time; a category added afterwards still works immediately because Next's
+// default dynamicParams behaviour renders unlisted slugs on request, and
+// the validity/label lookup below queries Supabase directly rather than a
+// hardcoded array.
+export async function generateStaticParams() {
+  const tradeCategories = await Store.getTradeCategories();
+  return tradeCategories.map((c) => ({ slug: c.id }));
 }
 
 export async function generateMetadata({ params }: PageProps<"/trades/[slug]">): Promise<Metadata> {
   const { slug } = await params;
-  const label = CATEGORY_LABELS[slug];
+  const tradeCategories = await Store.getTradeCategories();
+  const label = tradeCategories.find((c) => c.id === slug)?.label;
   return { title: label ? `${label} in Wiltshire, ranked — Discover Wiltshire` : "Category not found" };
 }
 
 export default async function TradeCategoryPage({ params }: PageProps<"/trades/[slug]">) {
   const { slug } = await params;
-  const isTrade = TRADE_CATEGORIES.some((c) => c.id === slug);
-  const label = CATEGORY_LABELS[slug];
+  const tradeCategories = await Store.getTradeCategories();
+  const label = tradeCategories.find((c) => c.id === slug)?.label;
 
-  if (!isTrade) {
+  if (!label) {
     return (
       <>
         <Header />

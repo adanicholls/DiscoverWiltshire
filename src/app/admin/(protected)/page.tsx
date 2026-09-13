@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import PendingListingRow from "@/components/admin/PendingListingRow";
 import PendingUpgradeRow from "@/components/admin/PendingUpgradeRow";
+import { Store } from "@/lib/store";
 
 export const metadata: Metadata = {
   title: "Approval queue — Discover Wiltshire admin",
@@ -11,14 +12,16 @@ export const metadata: Metadata = {
 export default async function AdminQueuePage() {
   const supabase = createSupabaseAdminClient();
 
-  const [{ data: pendingListings, error: listingsError }, { data: pendingUpgrades, error: upgradesError }] = await Promise.all([
-    supabase.from("businesses").select("*").eq("status", "pending").order("created_at", { ascending: false }),
-    supabase
-      .from("upgrade_requests")
-      .select("*, businesses(name)")
-      .eq("status", "pending")
-      .order("created_at", { ascending: false }),
-  ]);
+  const [{ data: pendingListings, error: listingsError }, { data: pendingUpgrades, error: upgradesError }, categoryLabels] =
+    await Promise.all([
+      supabase.from("businesses").select("*").eq("status", "pending").order("created_at", { ascending: false }),
+      supabase
+        .from("upgrade_requests")
+        .select("*, businesses(name)")
+        .eq("status", "pending")
+        .order("created_at", { ascending: false }),
+      Store.getCategoryLabels(),
+    ]);
 
   if (listingsError || upgradesError) {
     return (
@@ -56,6 +59,7 @@ export default async function AdminQueuePage() {
               id={b.id}
               name={b.name}
               categoryId={b.category_id}
+              categoryLabel={categoryLabels[b.category_id] || b.category_id}
               townId={b.town_id}
               tagline={b.tagline}
               createdAt={b.created_at}

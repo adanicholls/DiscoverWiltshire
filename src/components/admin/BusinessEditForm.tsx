@@ -3,14 +3,15 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { updateBusiness, type BusinessEditFields } from "@/app/admin/actions";
-import { CATEGORY_LABELS_CORE, DIRECT_CATEGORY_PAGES, TRADE_CATEGORIES, TOWNS } from "@/lib/data";
+import { CATEGORY_LABELS_CORE, DIRECT_CATEGORY_PAGES, TOWNS, type TradeCategory } from "@/lib/data";
 
 interface Props {
   id: string;
   initial: BusinessEditFields;
+  tradeCategories: TradeCategory[];
 }
 
-export default function BusinessEditForm({ id, initial }: Props) {
+export default function BusinessEditForm({ id, initial, tradeCategories }: Props) {
   const router = useRouter();
   const [fields, setFields] = useState<BusinessEditFields>(initial);
   const [saving, setSaving] = useState(false);
@@ -64,7 +65,7 @@ export default function BusinessEditForm({ id, initial }: Props) {
             ))}
           </optgroup>
           <optgroup label="Trades & services">
-            {TRADE_CATEGORIES.map((cat) => (
+            {tradeCategories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.label}
               </option>

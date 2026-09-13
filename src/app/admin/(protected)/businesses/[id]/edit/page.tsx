@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import BusinessEditForm from "@/components/admin/BusinessEditForm";
+import { Store } from "@/lib/store";
 
 export const metadata: Metadata = {
   title: "Edit business — Discover Wiltshire admin",
@@ -11,7 +12,10 @@ export const metadata: Metadata = {
 export default async function AdminEditBusinessPage({ params }: PageProps<"/admin/businesses/[id]/edit">) {
   const { id } = await params;
   const supabase = createSupabaseAdminClient();
-  const { data: business, error } = await supabase.from("businesses").select("*").eq("id", id).maybeSingle();
+  const [{ data: business, error }, tradeCategories] = await Promise.all([
+    supabase.from("businesses").select("*").eq("id", id).maybeSingle(),
+    Store.getTradeCategories(),
+  ]);
 
   if (error || !business) {
     return (
@@ -30,6 +34,7 @@ export default async function AdminEditBusinessPage({ params }: PageProps<"/admi
 
       <BusinessEditForm
         id={id}
+        tradeCategories={tradeCategories}
         initial={{
           name: business.name,
           category_id: business.category_id,

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
-import { CATEGORY_LABELS, TOWN_LABELS } from "@/lib/data";
+import { TOWN_LABELS } from "@/lib/data";
+import { Store } from "@/lib/store";
 import DeleteBusinessButton from "@/components/admin/DeleteBusinessButton";
 
 export const metadata: Metadata = {
@@ -17,7 +18,10 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default async function AdminBusinessesPage() {
   const supabase = createSupabaseAdminClient();
-  const { data: businesses, error } = await supabase.from("businesses").select("*").order("name");
+  const [{ data: businesses, error }, categoryLabels] = await Promise.all([
+    supabase.from("businesses").select("*").order("name"),
+    Store.getCategoryLabels(),
+  ]);
 
   if (error) {
     return <div className="card" style={{ marginTop: 24 }}>Couldn&apos;t load businesses: {error.message}</div>;
@@ -37,7 +41,7 @@ export default async function AdminBusinessesPage() {
                 <span style={{ fontSize: 11, fontWeight: 500, color: STATUS_COLORS[b.status] }}>{b.status}</span>
               </div>
               <div style={{ fontSize: 12, opacity: 0.6, marginTop: 2 }}>
-                {CATEGORY_LABELS[b.category_id] || b.category_id}
+                {categoryLabels[b.category_id] || b.category_id}
                 {b.town_id ? ` · ${TOWN_LABELS[b.town_id] || b.town_id}` : ""} · {b.tagline}
               </div>
             </div>

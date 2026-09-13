@@ -4,13 +4,15 @@ import Footer from "@/components/Footer";
 import CategoryTabs from "@/components/CategoryTabs";
 import TradeChips from "@/components/TradeChips";
 import Leaderboard from "@/components/Leaderboard";
-import { TRADE_CATEGORIES } from "@/lib/data";
+import { Store } from "@/lib/store";
 
 export const metadata: Metadata = {
   title: "Trades & services in Wiltshire, ranked — Discover Wiltshire",
 };
 
-export default function TradesPage() {
+export default async function TradesPage() {
+  const tradeCategories = await Store.getTradeCategories();
+
   return (
     <>
       <Header />
@@ -33,7 +35,7 @@ export default function TradesPage() {
           <button>This month</button>
         </div>
 
-        <Leaderboard categories={TRADE_CATEGORIES.map((c) => c.id)} showCategoryTag />
+        <Leaderboard categories={tradeCategories.map((c) => c.id)} showCategoryTag />
 
         <div className="cta-band">
           <h3>run a trade or local service?</h3>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { VoteProvider, UpvoteButton, UpvoteCtaButton } from "@/components/UpvoteBlock";
-import { CATEGORY_LABELS, DIRECT_CATEGORY_PAGES } from "@/lib/data";
+import { DIRECT_CATEGORY_PAGES } from "@/lib/data";
 import { Store } from "@/lib/store";
 import { shade } from "@/lib/color";
 
@@ -34,7 +34,8 @@ export default async function BusinessPage({ params }: PageProps<"/business/[id]
   const breadcrumbHref = DIRECT_CATEGORY_PAGES.includes(business.category)
     ? `/${business.category}`
     : `/trades/${business.category}`;
-  const categoryLabel = CATEGORY_LABELS[business.category] || business.category;
+  const categoryLabels = await Store.getCategoryLabels();
+  const categoryLabel = categoryLabels[business.category] || business.category;
 
   return (
     <VoteProvider businessId={business.id} initialVotes={business.liveVotes}>

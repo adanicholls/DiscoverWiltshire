@@ -200,9 +200,9 @@ img { max-width: 100%; display: block; }
 .mega-item-title { font-size: 13px; font-weight: 500; }
 .mega-item-desc { font-size: 12px; opacity: 0.6; margin-top: 2px; }
 
-/* The trades & services list is generated from TRADE_CATEGORIES
-   (see src/lib/data.ts) rather than hand-written, since it holds
-   20-30+ categories instead of a handful. */
+/* The trades & services list is fetched from Supabase (admin-editable via
+   /admin/categories, see src/lib/store.ts) rather than hand-written, since
+   it holds 20-30+ categories instead of a handful. */
 .mega-trades {
   grid-column: 1 / -1;
   border-top: 1px solid var(--border);

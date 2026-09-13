@@ -2,9 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CATEGORY_LABELS_CORE, DIRECT_CATEGORY_PAGES, TRADE_CATEGORIES, TOWNS } from "@/lib/data";
+import { CATEGORY_LABELS_CORE, DIRECT_CATEGORY_PAGES, TOWNS, type TradeCategory } from "@/lib/data";
 import { Store } from "@/lib/store";
 import { slugify } from "@/lib/slug";
+
+interface Props {
+  tradeCategories: TradeCategory[];
+}
 
 interface Errors {
   name?: boolean;
@@ -14,7 +18,7 @@ interface Errors {
   town?: boolean;
 }
 
-export default function ListingForm() {
+export default function ListingForm({ tradeCategories }: Props) {
   const [name, setName] = useState("");
   const [category, setCategory] = useState("");
   const [tagline, setTagline] = useState("");
@@ -108,7 +112,7 @@ export default function ListingForm() {
             ))}
           </optgroup>
           <optgroup label="Trades & services">
-            {TRADE_CATEGORIES.map((cat) => (
+            {tradeCategories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.label}
               </option>

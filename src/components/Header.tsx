@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState } from "react";
-import { TRADE_CATEGORIES, TOWNS } from "@/lib/data";
+import { TOWNS, type TradeCategory } from "@/lib/data";
+import { Store } from "@/lib/store";
 
 type MenuKey = "none" | "explore" | "business";
 
@@ -48,6 +49,14 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const headerRef = useRef<HTMLElement>(null);
+  const [tradeCategories, setTradeCategories] = useState<TradeCategory[]>([]);
+
+  // Trade categories are admin-editable (see /admin/categories), so the
+  // mega-menu fetches them instead of importing a static list — a newly
+  // added category (e.g. "Motoring") shows up here without a redeploy.
+  useEffect(() => {
+    Store.getTradeCategories().then(setTradeCategories).catch(() => {});
+  }, []);
 
   const exploreActive =
     pathname === "/" ||
@@ -179,7 +188,7 @@ export default function Header() {
             Trades &amp; services
           </Link>
           <div className="mega-trades-grid">
-            {TRADE_CATEGORIES.map((cat) => (
+            {tradeCategories.map((cat) => (
               <Link key={cat.id} className="mega-trades-link" href={`/trades/${cat.id}`} onClick={closeAll}>
                 {cat.label}
               </Link>

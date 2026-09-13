@@ -11,7 +11,7 @@
 --------------------------------------------------- */
 
 import { supabase } from "./supabase";
-import type { Business, Testimonial } from "./data";
+import { CATEGORY_LABELS_CORE, type Business, type Testimonial, type TradeCategory } from "./data";
 
 export interface LiveBusiness extends Business {
   liveVotes: number;
@@ -268,5 +268,29 @@ export const Store = {
     const { data, error } = await supabase.from("events").select("name, when_text");
     if (error) throw error;
     return (data ?? []).map((row) => ({ name: row.name, when: row.when_text }));
+  },
+
+  // Trade categories (e.g. "Painters", "Plumbers") are admin-editable via
+  // /admin/categories, so - unlike the four core categories - they live in
+  // the database rather than static data.ts, and every page that lists or
+  // validates them needs to read from here instead of a hardcoded array.
+  async getTradeCategories(): Promise<TradeCategory[]> {
+    const { data, error } = await supabase
+      .from("categories")
+      .select("id, label")
+      .eq("category_group", "trade")
+      .order("sort_order");
+    if (error) throw error;
+    return (data ?? []).map((row) => ({ id: row.id, label: row.label }));
+  },
+
+  // Full id -> label map across both core (static) and trade (DB) categories,
+  // for anywhere that needs to display a category name given only its id
+  // (e.g. Leaderboard's category tag, search matching).
+  async getCategoryLabels(): Promise<Record<string, string>> {
+    const trades = await this.getTradeCategories();
+    const labels: Record<string, string> = { ...CATEGORY_LABELS_CORE };
+    for (const cat of trades) labels[cat.id] = cat.label;
+    return labels;
   },
 };

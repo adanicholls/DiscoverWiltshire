@@ -1,9 +1,13 @@
 import Link from "next/link";
-import { TRADE_CATEGORIES } from "@/lib/data";
+import { Store } from "@/lib/store";
 
 /** Chip row for jumping between trade categories — used on both the trades
- * hub (activeSlug omitted) and an individual trade category page. */
-export default function TradeChips({ activeSlug }: { activeSlug?: string }) {
+ * hub (activeSlug omitted) and an individual trade category page. Fetches
+ * from Supabase (rather than a static list) since trade categories are
+ * admin-editable. */
+export default async function TradeChips({ activeSlug }: { activeSlug?: string }) {
+  const tradeCategories = await Store.getTradeCategories();
+
   return (
     <div className="tabs">
       {activeSlug ? (
@@ -13,7 +17,7 @@ export default function TradeChips({ activeSlug }: { activeSlug?: string }) {
       ) : (
         <span className="tab active">All trades &amp; services</span>
       )}
-      {TRADE_CATEGORIES.map((cat) =>
+      {tradeCategories.map((cat) =>
         cat.id === activeSlug ? (
           <span key={cat.id} className="tab active">
             {cat.label}
