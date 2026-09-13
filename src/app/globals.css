@@ -424,7 +424,11 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius);
   padding: 12px 16px;
   margin-bottom: 8px;
+  text-decoration: none;
+  color: inherit;
 }
+.event-row-link { cursor: pointer; transition: border-color 0.15s; }
+.event-row-link:hover, .event-row-link:focus-visible { border-color: var(--terracotta); }
 
 .event-date {
   display: flex;

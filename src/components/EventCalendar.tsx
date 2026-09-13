@@ -28,8 +28,13 @@ export default async function EventCalendar() {
           {group.events.map((ev) => {
             const { weekday, day, month, time } = formatEventDate(ev.startsAt);
             const hasLink = ev.website && ev.website !== "#";
+            // The whole row goes to the organiser's own page when there is
+            // one - same as clicking an event on Live Nation's calendar -
+            // rather than only the small "Details" button being clickable.
+            const Row = hasLink ? "a" : "div";
+            const rowProps = hasLink ? { href: ev.website, target: "_blank", rel: "noopener noreferrer" } : {};
             return (
-              <div className="event-row" key={ev.id}>
+              <Row className={"event-row" + (hasLink ? " event-row-link" : "")} key={ev.id} {...rowProps}>
                 <div className="event-date">
                   <span className="event-date-weekday">{weekday}</span>
                   <span className="event-date-day">{day}</span>
@@ -44,12 +49,8 @@ export default async function EventCalendar() {
                   </div>
                   {ev.priceText && <div className="event-meta">{ev.priceText}</div>}
                 </div>
-                {hasLink && (
-                  <a className="btn btn-primary event-cta" href={ev.website} target="_blank" rel="noopener noreferrer">
-                    Details
-                  </a>
-                )}
-              </div>
+                {hasLink && <span className="btn btn-primary event-cta">Details</span>}
+              </Row>
             );
           })}
         </div>
