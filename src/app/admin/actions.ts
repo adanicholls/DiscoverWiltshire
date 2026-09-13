@@ -148,6 +148,59 @@ export async function updateCategoryLabel(id: string, label: string): Promise<vo
   revalidatePath("/trades", "layout");
 }
 
+// Events (the "what's on" calendar) go through the same
+// submit-pending / admin-approve flow as business listings.
+export async function approveEvent(id: string) {
+  await requireAdmin();
+  const supabase = createSupabaseAdminClient();
+  const { error } = await supabase.from("events").update({ status: "approved" }).eq("id", id);
+  if (error) throw error;
+  revalidatePath("/admin");
+  revalidatePath("/whats-on");
+  revalidatePath("/");
+}
+
+export async function declineEvent(id: string) {
+  await requireAdmin();
+  const supabase = createSupabaseAdminClient();
+  const { error } = await supabase.from("events").update({ status: "declined" }).eq("id", id);
+  if (error) throw error;
+  revalidatePath("/admin");
+}
+
+export async function deleteEvent(id: string) {
+  await requireAdmin();
+  const supabase = createSupabaseAdminClient();
+  const { error } = await supabase.from("events").delete().eq("id", id);
+  if (error) throw error;
+  revalidatePath("/admin");
+  revalidatePath("/admin/events");
+  revalidatePath("/whats-on");
+  revalidatePath("/");
+}
+
+export interface EventEditFields {
+  name: string;
+  description: string;
+  starts_at: string;
+  venue: string;
+  town_id: string | null;
+  website: string;
+  price_text: string;
+  photo_color: string;
+  status: "pending" | "approved" | "declined";
+}
+
+export async function updateEvent(id: string, fields: EventEditFields) {
+  await requireAdmin();
+  const supabase = createSupabaseAdminClient();
+  const { error } = await supabase.from("events").update(fields).eq("id", id);
+  if (error) throw error;
+  revalidatePath("/admin/events");
+  revalidatePath("/whats-on");
+  revalidatePath("/");
+}
+
 export async function deleteCategory(id: string): Promise<void> {
   await requireAdmin();
   const supabase = createSupabaseAdminClient();

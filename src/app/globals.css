@@ -401,6 +401,58 @@ img { max-width: 100%; display: block; }
   padding: 12px 0;
 }
 
+/* ---------------- Events calendar ---------------- */
+/* Same date-badge/thumbnail/title/CTA row layout as a typical event
+   listings site (grouped by month, soonest first), in this site's own
+   cream/terracotta/Fraunces look rather than a copied visual style. */
+
+.event-month-heading {
+  font-family: var(--font-voice);
+  font-size: 16px;
+  font-weight: 400;
+  margin: 22px 0 10px;
+  opacity: 0.85;
+}
+.event-month-heading:first-child { margin-top: 6px; }
+
+.event-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  margin-bottom: 8px;
+}
+
+.event-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 52px;
+  padding: 6px 4px;
+  border-radius: 8px;
+  background: var(--terracotta-wash);
+  flex-shrink: 0;
+}
+.event-date-weekday { font-size: 10px; font-weight: 500; text-transform: uppercase; color: var(--terracotta); letter-spacing: 0.03em; }
+.event-date-day { font-family: var(--font-voice); font-size: 20px; line-height: 1.15; }
+.event-date-month { font-size: 10px; font-weight: 500; text-transform: uppercase; opacity: 0.6; }
+
+.event-thumb { width: 52px; height: 52px; border-radius: 8px; flex-shrink: 0; }
+
+.event-info { flex: 1; min-width: 0; }
+.event-title { font-size: 14px; font-weight: 500; }
+.event-meta { font-size: 12px; opacity: 0.6; margin-top: 2px; }
+
+.event-cta { flex-shrink: 0; }
+
+@media (max-width: 560px) {
+  .event-thumb { display: none; }
+}
+
 /* ---------------- Footer ---------------- */
 
 .site-footer {
@@ -422,7 +474,7 @@ img { max-width: 100%; display: block; }
 .field .hint { font-size: 12px; opacity: 0.55; margin-top: 4px; }
 .field .err { font-size: 12px; color: var(--danger); margin-top: 4px; display: none; }
 
-input[type="text"], input[type="tel"], input[type="url"], select, textarea {
+input[type="text"], input[type="tel"], input[type="url"], input[type="datetime-local"], select, textarea {
   width: 100%;
   font: inherit;
   font-size: 14px;

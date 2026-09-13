@@ -87,6 +87,44 @@ function mapBusinessRow(row: BusinessRow): Omit<Business, "votes" | "testimonial
   };
 }
 
+export interface LiveEvent {
+  id: string;
+  name: string;
+  description: string;
+  startsAt: string;
+  venue: string;
+  town: string | null;
+  website: string;
+  priceText: string;
+  photoColor: string;
+}
+
+interface EventRow {
+  id: string;
+  name: string;
+  description: string;
+  starts_at: string;
+  venue: string;
+  town_id: string | null;
+  website: string;
+  price_text: string;
+  photo_color: string;
+}
+
+function mapEventRow(row: EventRow): LiveEvent {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    startsAt: row.starts_at,
+    venue: row.venue,
+    town: row.town_id,
+    website: row.website,
+    priceText: row.price_text,
+    photoColor: row.photo_color,
+  };
+}
+
 async function attachVotes<T extends { id: string }>(
   rows: T[]
 ): Promise<(T & { liveVotes: number })[]> {
@@ -264,10 +302,46 @@ export const Store = {
     if (error) throw error;
   },
 
-  async getEvents(): Promise<{ name: string; when: string }[]> {
-    const { data, error } = await supabase.from("events").select("name, when_text");
+  // Only approved, still-upcoming events, soonest first - same shape for
+  // the homepage strip (pass a small limit) and the full /whats-on
+  // calendar (no limit).
+  async getUpcomingEvents(limit?: number): Promise<LiveEvent[]> {
+    let query = supabase
+      .from("events")
+      .select("id, name, description, starts_at, venue, town_id, website, price_text, photo_color")
+      .eq("status", "approved")
+      .gte("starts_at", new Date().toISOString())
+      .order("starts_at", { ascending: true });
+    if (limit) query = query.limit(limit);
+
+    const { data, error } = await query;
     if (error) throw error;
-    return (data ?? []).map((row) => ({ name: row.name, when: row.when_text }));
+    return (data as EventRow[]).map(mapEventRow);
+  },
+
+  // Submitting an event inserts straight into events with status='pending',
+  // same pattern as submitListing - RLS only allows inserts with that
+  // status, so a submission can never self-approve.
+  async submitEvent(fields: {
+    name: string;
+    description: string;
+    startsAt: string;
+    venue: string;
+    town: string;
+    website: string;
+    priceText: string;
+  }): Promise<void> {
+    const { error } = await supabase.from("events").insert({
+      name: fields.name,
+      description: fields.description,
+      starts_at: fields.startsAt,
+      venue: fields.venue,
+      town_id: fields.town || null,
+      website: fields.website || "#",
+      price_text: fields.priceText,
+      status: "pending",
+    });
+    if (error) throw error;
   },
 
   // Trade categories (e.g. "Painters", "Plumbers") are admin-editable via

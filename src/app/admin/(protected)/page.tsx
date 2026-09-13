@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import PendingListingRow from "@/components/admin/PendingListingRow";
 import PendingUpgradeRow from "@/components/admin/PendingUpgradeRow";
+import PendingEventRow from "@/components/admin/PendingEventRow";
 import { Store } from "@/lib/store";
+import { TOWN_LABELS } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Approval queue — Discover Wiltshire admin",
@@ -12,28 +14,34 @@ export const metadata: Metadata = {
 export default async function AdminQueuePage() {
   const supabase = createSupabaseAdminClient();
 
-  const [{ data: pendingListings, error: listingsError }, { data: pendingUpgrades, error: upgradesError }, categoryLabels] =
-    await Promise.all([
-      supabase.from("businesses").select("*").eq("status", "pending").order("created_at", { ascending: false }),
-      supabase
-        .from("upgrade_requests")
-        .select("*, businesses(name)")
-        .eq("status", "pending")
-        .order("created_at", { ascending: false }),
-      Store.getCategoryLabels(),
-    ]);
+  const [
+    { data: pendingListings, error: listingsError },
+    { data: pendingUpgrades, error: upgradesError },
+    { data: pendingEvents, error: eventsError },
+    categoryLabels,
+  ] = await Promise.all([
+    supabase.from("businesses").select("*").eq("status", "pending").order("created_at", { ascending: false }),
+    supabase
+      .from("upgrade_requests")
+      .select("*, businesses(name)")
+      .eq("status", "pending")
+      .order("created_at", { ascending: false }),
+    supabase.from("events").select("*").eq("status", "pending").order("created_at", { ascending: false }),
+    Store.getCategoryLabels(),
+  ]);
 
-  if (listingsError || upgradesError) {
+  if (listingsError || upgradesError || eventsError) {
     return (
       <div className="card" style={{ marginTop: 24 }}>
-        Couldn&apos;t load the queue: {(listingsError || upgradesError)?.message}
+        Couldn&apos;t load the queue: {(listingsError || upgradesError || eventsError)?.message}
       </div>
     );
   }
 
   const listings = pendingListings ?? [];
   const upgrades = pendingUpgrades ?? [];
-  const totalPending = listings.length + upgrades.length;
+  const events = pendingEvents ?? [];
+  const totalPending = listings.length + upgrades.length + events.length;
 
   return (
     <>
@@ -74,6 +82,17 @@ export default async function AdminQueuePage() {
               requestType={u.request_type}
               detail={u.detail}
               createdAt={u.created_at}
+            />
+          ))}
+          {events.map((ev) => (
+            <PendingEventRow
+              key={ev.id}
+              id={ev.id}
+              name={ev.name}
+              venue={ev.venue}
+              townLabel={ev.town_id ? TOWN_LABELS[ev.town_id] || ev.town_id : null}
+              startsAt={ev.starts_at}
+              createdAt={ev.created_at}
             />
           ))}
         </>
