@@ -124,25 +124,31 @@ export const Store = {
 
   async searchBusinesses(query: string, categoryLabels: Record<string, string>): Promise<LiveBusiness[]> {
     const q = `%${query.trim()}%`;
+    const needle = query.trim().toLowerCase();
+
+    // Category label isn't a real column, so a query matching only a
+    // category name (e.g. "accountant") is resolved against the small
+    // static categories lookup first, then included as an extra
+    // category_id filter in the same query - not a second round-trip,
+    // and not limited to categories already present in a text match.
+    const matchingCategoryIds = Object.entries(categoryLabels)
+      .filter(([, label]) => label.toLowerCase().includes(needle))
+      .map(([id]) => id);
+
+    const filters = [`name.ilike.${q}`, `tagline.ilike.${q}`, `description.ilike.${q}`, `location.ilike.${q}`];
+    if (matchingCategoryIds.length > 0) {
+      filters.push(`category_id.in.(${matchingCategoryIds.join(",")})`);
+    }
+
     const { data, error } = await supabase
       .from("businesses")
       .select("*")
       .eq("status", "approved")
-      .or(`name.ilike.${q},tagline.ilike.${q},description.ilike.${q},location.ilike.${q}`);
+      .or(filters.join(","));
 
     if (error) throw error;
 
-    // Category label isn't a real column to filter server-side against, so
-    // a query matching only a category name (e.g. "plumbers") is caught
-    // here instead, client-side, against the small categories lookup.
-    const byCategory = (data as BusinessRow[]).filter((row) => {
-      const label = categoryLabels[row.category_id] || row.category_id;
-      return label.toLowerCase().includes(query.trim().toLowerCase());
-    });
-    const merged = new Map<string, BusinessRow>();
-    for (const row of [...(data as BusinessRow[]), ...byCategory]) merged.set(row.id, row);
-
-    const businesses = Array.from(merged.values()).map((row) => ({
+    const businesses = (data as BusinessRow[]).map((row) => ({
       ...mapBusinessRow(row),
       votes: 0,
       testimonials: [] as Testimonial[],
