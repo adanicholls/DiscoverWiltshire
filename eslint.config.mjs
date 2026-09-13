@@ -12,11 +12,6 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // The old static prototype (js/, css/, root *.html) is being ported
-    // into src/ page by page rather than all at once — see README.md.
-    // Not part of the Next.js app, so not worth linting until it's gone.
-    "js/**",
-    "css/**",
   ]),
 ]);
 
