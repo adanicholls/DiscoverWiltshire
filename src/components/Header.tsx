@@ -164,6 +164,10 @@ export default function Header() {
           <div className="mega-item-title">Shops</div>
           <div className="mega-item-desc">local shops and services, ranked</div>
         </Link>
+        <Link className="mega-item" href="/trades" onClick={closeAll}>
+          <div className="mega-item-title">Trades &amp; services</div>
+          <div className="mega-item-desc">painters, plumbers, electricians &amp; more</div>
+        </Link>
 
         <div className="mega-trades">
           <Link className="mega-trades-heading" href="/towns" onClick={closeAll}>
