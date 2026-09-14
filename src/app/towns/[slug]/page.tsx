@@ -4,7 +4,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TownChips from "@/components/TownChips";
 import Leaderboard from "@/components/Leaderboard";
-import { TOWNS, TOWN_LABELS } from "@/lib/data";
+import { TOWNS, TOWN_LABELS, DIRECT_CATEGORY_PAGES } from "@/lib/data";
+import { Store } from "@/lib/store";
 
 // One generic page serves every town via /towns/<slug>, same pattern as
 // /trades/[slug] - see TOWNS in lib/data.ts to add more.
@@ -17,6 +18,17 @@ export async function generateMetadata({ params }: PageProps<"/towns/[slug]">): 
   const label = TOWN_LABELS[slug];
   return { title: label ? `${label}, Wiltshire — Discover Wiltshire` : "Town not found" };
 }
+
+// "Show me the best of my town" is its own browsing entry point, distinct
+// from category leaderboards and from search - sectioned by category
+// (same ranking mechanic, just scoped by geography) rather than one mixed
+// list, so it reads like a set of local shortlists rather than a dump.
+const CORE_SECTION_HEADINGS: Record<string, (label: string) => string> = {
+  "eat-drink": (label) => `Top-rated eat & drink in ${label}`,
+  stay: (label) => `Top-rated places to stay in ${label}`,
+  "things-to-do": (label) => `Top things to do in ${label}`,
+  shops: (label) => `Top-rated shops in ${label}`,
+};
 
 export default async function TownPage({ params }: PageProps<"/towns/[slug]">) {
   const { slug } = await params;
@@ -37,6 +49,8 @@ export default async function TownPage({ params }: PageProps<"/towns/[slug]">) {
     );
   }
 
+  const tradeCategories = await Store.getTradeCategories();
+
   return (
     <>
       <Header />
@@ -49,7 +63,27 @@ export default async function TownPage({ params }: PageProps<"/towns/[slug]">) {
 
         <TownChips activeSlug={slug} />
 
-        <Leaderboard town={slug} showCategoryTag />
+        {DIRECT_CATEGORY_PAGES.map((catId) => (
+          <section key={catId} style={{ marginBottom: 8 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
+              <h2 className="section-heading">{CORE_SECTION_HEADINGS[catId](label)}</h2>
+              <Link href={`/${catId}?town=${slug}`} style={{ fontSize: 12, opacity: 0.65, whiteSpace: "nowrap" }}>
+                See all →
+              </Link>
+            </div>
+            <Leaderboard category={catId} town={slug} limit={5} />
+          </section>
+        ))}
+
+        <section style={{ marginBottom: 8 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
+            <h2 className="section-heading">Top-rated trades &amp; services in {label}</h2>
+            <Link href={`/trades?town=${slug}`} style={{ fontSize: 12, opacity: 0.65, whiteSpace: "nowrap" }}>
+              See all →
+            </Link>
+          </div>
+          <Leaderboard categories={tradeCategories.map((c) => c.id)} town={slug} limit={5} showCategoryTag />
+        </section>
 
         <div className="cta-band">
           <h3>think your business belongs on this list?</h3>

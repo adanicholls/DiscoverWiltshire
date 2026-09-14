@@ -273,6 +273,58 @@ img { max-width: 100%; display: block; }
 .masthead-brand { display: flex; align-items: center; gap: 12px; }
 .masthead-tagline { font-family: var(--font-voice); font-size: 17px; }
 
+/* ---------------- Homepage search bar ---------------- */
+/* The "I need X, near me, now" fast lane - prominent, but sized to sit
+   above the leaderboard as an entry point, not to outweigh it. */
+
+.home-search {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 4px;
+  margin: 4px 0 22px;
+  flex-wrap: wrap;
+}
+
+.home-search-input,
+.home-search-town {
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  width: auto;
+}
+.home-search-input:focus,
+.home-search-town:focus {
+  outline: none;
+}
+
+.home-search-input {
+  flex: 2;
+  min-width: 200px;
+  font-size: 15px;
+  padding: 12px 14px;
+}
+
+.home-search-town {
+  flex: 1;
+  min-width: 170px;
+  font-size: 14px;
+  padding: 12px 14px;
+  border-left: 1px solid var(--border);
+  color: inherit;
+}
+
+.home-search-submit { flex-shrink: 0; margin: 4px; }
+
+@media (max-width: 640px) {
+  .home-search-town { border-left: none; border-top: 1px solid var(--border); }
+  .home-search-input, .home-search-town { flex-basis: 100%; }
+  .home-search-submit { flex-basis: 100%; justify-content: center; }
+}
+
 .search-box {
   background: var(--surface);
   border: 1px solid var(--border);

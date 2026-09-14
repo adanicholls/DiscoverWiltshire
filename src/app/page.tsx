@@ -5,10 +5,10 @@ import Leaderboard from "@/components/Leaderboard";
 import CategoryTabs from "@/components/CategoryTabs";
 import LocationFilter from "@/components/LocationFilter";
 import EventsList from "@/components/EventsList";
+import HomeSearchBar from "@/components/HomeSearchBar";
 
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
-  const q = typeof params.q === "string" ? params.q : undefined;
   const town = typeof params.town === "string" ? params.town : undefined;
 
   return (
@@ -32,6 +32,11 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
           </div>
         </div>
 
+        {/* The "I need X, near me, now" fast lane - separate from the
+            leaderboard below, not a replacement for it. Routes to a
+            filtered results page rather than changing what's shown here. */}
+        <HomeSearchBar />
+
         <CategoryTabs active="/" />
 
         <div className="home-layout">
@@ -47,7 +52,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
           </div>
 
           <div className="home-main">
-            <Leaderboard showCategoryTag limit={8} searchQuery={q} town={town} />
+            <Leaderboard showCategoryTag limit={8} town={town} />
             <p className="placeholder-note">
               The time toggle above (Today / This week / This month) is still just visual — votes now carry real
               timestamps in the database, so filtering by period is just a query away, not yet wired up to these

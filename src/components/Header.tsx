@@ -1,23 +1,21 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useRef, useState } from "react";
-import { TOWNS, type TradeCategory } from "@/lib/data";
-import { Store } from "@/lib/store";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { TOWNS } from "@/lib/data";
 
 type MenuKey = "none" | "explore" | "business";
 
 const HOVER_CLOSE_DELAY = 150; // tolerates the cursor briefly leaving between button and panel
 
-// useSearchParams() opts a page into dynamic rendering unless whatever
-// calls it sits behind a Suspense boundary — needed here specifically
-// because Header (via this) is used on statically-generated pages like
-// /trades/[slug] and /towns/[slug]. Isolated into its own component so
-// only this part needs the boundary, not all of Header.
+// A simple keyword box, kept deliberately basic - the smart "trade + town"
+// search that parses queries like "electrician Melksham" lives in
+// HomeSearchBar (the homepage, and /search itself for refining); this one
+// is just a quick way to jump to those same results from anywhere on the
+// site, so it doesn't need useSearchParams()/Suspense.
 function HeaderSearchInput({ onSubmit }: { onSubmit: () => void }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   return (
     <input
@@ -30,13 +28,7 @@ function HeaderSearchInput({ onSubmit }: { onSubmit: () => void }) {
         const value = e.currentTarget.value.trim();
         if (e.key === "Enter" && value) {
           onSubmit();
-          // Preserves an active town filter (only ever set on the
-          // homepage) across a new search, rather than a search
-          // silently dropping it.
-          const town = searchParams.get("town");
-          const qs = new URLSearchParams({ q: value });
-          if (town) qs.set("town", town);
-          router.push("/?" + qs.toString());
+          router.push("/search?" + new URLSearchParams({ q: value }).toString());
         }
       }}
     />
@@ -49,14 +41,6 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const headerRef = useRef<HTMLElement>(null);
-  const [tradeCategories, setTradeCategories] = useState<TradeCategory[]>([]);
-
-  // Trade categories are admin-editable (see /admin/categories), so the
-  // mega-menu fetches them instead of importing a static list — a newly
-  // added category (e.g. "Motoring") shows up here without a redeploy.
-  useEffect(() => {
-    Store.getTradeCategories().then(setTradeCategories).catch(() => {});
-  }, []);
 
   const exploreActive =
     pathname === "/" ||
@@ -143,9 +127,7 @@ export default function Header() {
             </Link>
           </nav>
 
-          <Suspense fallback={<input type="search" className="search-box" placeholder="Search Discover Wiltshire…" aria-label="Search Discover Wiltshire" disabled />}>
-            <HeaderSearchInput onSubmit={closeAll} />
-          </Suspense>
+          <HeaderSearchInput onSubmit={closeAll} />
 
           <div className="nav-utility">
             <span className="sign-in">Sign in</span>
@@ -182,22 +164,6 @@ export default function Header() {
           <div className="mega-item-title">Shops</div>
           <div className="mega-item-desc">local shops and services, ranked</div>
         </Link>
-
-        <div className="mega-trades">
-          <Link className="mega-trades-heading" href="/trades" onClick={closeAll}>
-            Trades &amp; services
-          </Link>
-          <div className="mega-trades-grid">
-            {tradeCategories.map((cat) => (
-              <Link key={cat.id} className="mega-trades-link" href={`/trades/${cat.id}`} onClick={closeAll}>
-                {cat.label}
-              </Link>
-            ))}
-          </div>
-          <Link className="mega-trades-all" href="/trades" onClick={closeAll}>
-            Browse all trades &amp; services →
-          </Link>
-        </div>
 
         <div className="mega-trades">
           <Link className="mega-trades-heading" href="/towns" onClick={closeAll}>

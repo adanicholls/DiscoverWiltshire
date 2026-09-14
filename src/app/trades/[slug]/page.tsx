@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import CategoryTabs from "@/components/CategoryTabs";
 import TradeChips from "@/components/TradeChips";
 import Leaderboard from "@/components/Leaderboard";
 import { Store } from "@/lib/store";
+import { TOWN_LABELS } from "@/lib/data";
 
 // One generic page serves every trade category via /trades/<slug>, instead
 // of a hand-built page per category. Categories are admin-editable (see
@@ -27,8 +27,11 @@ export async function generateMetadata({ params }: PageProps<"/trades/[slug]">):
   return { title: label ? `${label} in Wiltshire, ranked — Discover Wiltshire` : "Category not found" };
 }
 
-export default async function TradeCategoryPage({ params }: PageProps<"/trades/[slug]">) {
+export default async function TradeCategoryPage({ params, searchParams }: PageProps<"/trades/[slug]">) {
   const { slug } = await params;
+  const sp = await searchParams;
+  const town = typeof sp.town === "string" ? sp.town : undefined;
+  const townLabel = town ? TOWN_LABELS[town] : undefined;
   const tradeCategories = await Store.getTradeCategories();
   const label = tradeCategories.find((c) => c.id === slug)?.label;
 
@@ -52,10 +55,15 @@ export default async function TradeCategoryPage({ params }: PageProps<"/trades/[
       <Header />
 
       <main className="wrap">
-        <h1 className="page-title">{label}, ranked</h1>
-        <p className="page-subtitle">{label} across Wiltshire, ranked by the people who&apos;ve actually hired them.</p>
+        <h1 className="page-title">
+          {label}
+          {townLabel ? ` near ${townLabel}` : ""}, ranked
+        </h1>
+        <p className="page-subtitle">
+          {label} {townLabel ? `near ${townLabel}` : "across Wiltshire"}, ranked by the people who&apos;ve actually
+          hired them.
+        </p>
 
-        <CategoryTabs active="/trades" />
         <TradeChips activeSlug={slug} />
 
         <div className="period-toggle">
@@ -66,7 +74,7 @@ export default async function TradeCategoryPage({ params }: PageProps<"/trades/[
           <button>This month</button>
         </div>
 
-        <Leaderboard category={slug} />
+        <Leaderboard category={slug} town={town} />
 
         <div className="cta-band">
           <h3>think your business belongs on this list?</h3>

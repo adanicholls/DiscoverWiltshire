@@ -3,19 +3,27 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CategoryTabs from "@/components/CategoryTabs";
 import Leaderboard from "@/components/Leaderboard";
+import { TOWN_LABELS } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Stay in Wiltshire, ranked — Discover Wiltshire",
 };
 
-export default function StayPage() {
+export default async function StayPage({ searchParams }: PageProps<"/stay">) {
+  const params = await searchParams;
+  const town = typeof params.town === "string" ? params.town : undefined;
+  const townLabel = town ? TOWN_LABELS[town] : undefined;
+
   return (
     <>
       <Header />
 
       <main className="wrap">
-        <h1 className="page-title">Stay, ranked</h1>
-        <p className="page-subtitle">B&amp;Bs, cottages, and places to sleep, ranked by the people who&apos;ve stayed there.</p>
+        <h1 className="page-title">Stay{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
+        <p className="page-subtitle">
+          B&amp;Bs, cottages, and places to sleep {townLabel ? `near ${townLabel}` : ""}, ranked by the people
+          who&apos;ve stayed there.
+        </p>
 
         <CategoryTabs active="/stay" />
         <div className="period-toggle">
@@ -26,7 +34,7 @@ export default function StayPage() {
           <button>This month</button>
         </div>
 
-        <Leaderboard category="stay" />
+        <Leaderboard category="stay" town={town} />
 
         <div className="cta-band">
           <h3>think your business belongs on this list?</h3>

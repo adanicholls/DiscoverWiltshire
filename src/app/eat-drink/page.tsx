@@ -3,13 +3,16 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CategoryTabs from "@/components/CategoryTabs";
 import Leaderboard from "@/components/Leaderboard";
-import { CATEGORY_SPONSORS } from "@/lib/data";
+import { CATEGORY_SPONSORS, TOWN_LABELS } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Eat & drink in Wiltshire, ranked — Discover Wiltshire",
 };
 
-export default function EatDrinkPage() {
+export default async function EatDrinkPage({ searchParams }: PageProps<"/eat-drink">) {
+  const params = await searchParams;
+  const town = typeof params.town === "string" ? params.town : undefined;
+  const townLabel = town ? TOWN_LABELS[town] : undefined;
   const sponsor = CATEGORY_SPONSORS["eat-drink"];
 
   return (
@@ -26,8 +29,11 @@ export default function EatDrinkPage() {
       )}
 
       <main className="wrap">
-        <h1 className="page-title">Eat &amp; drink, ranked</h1>
-        <p className="page-subtitle">Every pub, café, and restaurant in the county, ranked by the people who actually eat there.</p>
+        <h1 className="page-title">Eat &amp; drink{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
+        <p className="page-subtitle">
+          Every pub, café, and restaurant {townLabel ? `near ${townLabel}` : "in the county"}, ranked by the people
+          who actually eat there.
+        </p>
 
         <CategoryTabs active="/eat-drink" />
         <div className="period-toggle">
@@ -38,7 +44,7 @@ export default function EatDrinkPage() {
           <button>This month</button>
         </div>
 
-        <Leaderboard category="eat-drink" />
+        <Leaderboard category="eat-drink" town={town} />
 
         <div className="cta-band">
           <h3>think your business belongs on this list?</h3>
