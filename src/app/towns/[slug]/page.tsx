@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import TownChips from "@/components/TownChips";
 import Leaderboard from "@/components/Leaderboard";
 import { TOWNS, TOWN_LABELS, DIRECT_CATEGORY_PAGES } from "@/lib/data";
 import { Store } from "@/lib/store";
@@ -60,8 +59,6 @@ export default async function TownPage({ params }: PageProps<"/towns/[slug]">) {
         <p className="page-subtitle">
           Every pub, stay, activity, shop, and local trade near {label}, ranked by the people who actually use them.
         </p>
-
-        <TownChips activeSlug={slug} />
 
         {DIRECT_CATEGORY_PAGES.map((catId) => (
           <section key={catId} style={{ marginBottom: 8 }}>
