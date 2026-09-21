@@ -20,8 +20,51 @@ export default function PricingPage() {
         .price-tag { font-size: 13px; opacity: 0.7; }
         .price-table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 13px; }
         .price-table th, .price-table td { text-align: left; padding: 8px 10px; border: 1px solid var(--border); }
-        .faq-item { margin-bottom: 16px; }
-        .faq-item p:first-child { font-weight: 500; margin-bottom: 4px; }
+        /* Native <details>/<summary> accordion - disclosure semantics,
+           keyboard support, and find-in-page all come from the browser,
+           no JS or ARIA needed. Colours/type pull from this site's own
+           tokens instead of the reference demo's blue theme. */
+        .faq-accordion__item { border-top: 1px solid var(--border); }
+        .faq-accordion__item:last-child { border-bottom: 1px solid var(--border); }
+        .faq-accordion__q {
+          list-style: none;
+          cursor: pointer;
+          position: relative;
+          padding: 16px 32px 16px 0;
+          font-size: 14px;
+          font-weight: 500;
+          color: var(--ink);
+          transition: color 0.15s;
+        }
+        .faq-accordion__q::-webkit-details-marker { display: none; }
+        .faq-accordion__q::marker { content: ""; }
+        .faq-accordion__q:hover { color: var(--terracotta); }
+        .faq-accordion__q::after {
+          content: "";
+          position: absolute;
+          right: 4px;
+          top: 50%;
+          width: 8px;
+          height: 8px;
+          border-right: 2px solid currentColor;
+          border-bottom: 2px solid currentColor;
+          transform: translateY(-70%) rotate(45deg);
+          transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+          opacity: 0.55;
+        }
+        .faq-accordion__item[open] > .faq-accordion__q::after { transform: translateY(-30%) rotate(225deg); }
+        .faq-accordion__item[open] > .faq-accordion__q { color: var(--terracotta); }
+        .faq-accordion__a { padding: 0 20px 18px 0; font-size: 13.5px; line-height: 1.6; color: var(--ink-muted); }
+        .faq-accordion__item[open] .faq-accordion__a { animation: faq-accordion-in 0.3s cubic-bezier(0.2, 0.7, 0.3, 1); }
+        @keyframes faq-accordion-in {
+          from { opacity: 0; translate: 0 -6px; }
+          to { opacity: 1; translate: 0 0; }
+        }
+        .faq-accordion__q:focus-visible { outline: 2px solid var(--terracotta); outline-offset: 3px; border-radius: 6px; }
+        @media (prefers-reduced-motion: reduce) {
+          .faq-accordion__item[open] .faq-accordion__a { animation: none; }
+          .faq-accordion__q::after { transition: none; }
+        }
 
         /* "At a glance" bento summary - the mechanic (one dominant tile,
            smaller cells fanning out) borrowed from a bento pricing layout,
@@ -274,34 +317,46 @@ export default function PricingPage() {
         </div>
 
         <h2 className="section-heading">questions worth answering up front</h2>
-        <div className="faq-item">
-          <p>Does paying move me up the rankings?</p>
-          <p style={{ opacity: 0.75, fontSize: 14 }}>
-            No. Paid options buy a tag, a badge, or a position at the top of the page — never a vote. Every upvote
-            you see is real.
-          </p>
-        </div>
-        <div className="faq-item">
-          <p>What happens when my promoted slot runs out?</p>
-          <p style={{ opacity: 0.75, fontSize: 14 }}>
-            You drop back to your genuine position, based on your real upvote count. Nothing about your organic
-            ranking is affected either way.
-          </p>
-        </div>
-        <div className="faq-item">
-          <p>Can more than one business sponsor the same category?</p>
-          <p style={{ opacity: 0.75, fontSize: 14 }}>No — one sponsor per category, so it actually means something.</p>
-        </div>
-        <div className="faq-item">
-          <p>Is the free listing really free forever?</p>
-          <p style={{ opacity: 0.75, fontSize: 14 }}>Yes. Listing, climbing the rankings, and getting found costs nothing today or ever.</p>
-        </div>
-        <div className="faq-item">
-          <p>What if I become a founding member and then never buy a promoted slot?</p>
-          <p style={{ opacity: 0.75, fontSize: 14 }}>
-            The price lock and badge are yours regardless — you&apos;re not obligated to use them, they&apos;re just
-            waiting whenever you do.
-          </p>
+        <div className="faq-accordion">
+          <details className="faq-accordion__item" open>
+            <summary className="faq-accordion__q">Does paying move me up the rankings?</summary>
+            <div className="faq-accordion__a">
+              <p>
+                No. Paid options buy a tag, a badge, or a position at the top of the page — never a vote. Every
+                upvote you see is real.
+              </p>
+            </div>
+          </details>
+          <details className="faq-accordion__item">
+            <summary className="faq-accordion__q">What happens when my promoted slot runs out?</summary>
+            <div className="faq-accordion__a">
+              <p>
+                You drop back to your genuine position, based on your real upvote count. Nothing about your organic
+                ranking is affected either way.
+              </p>
+            </div>
+          </details>
+          <details className="faq-accordion__item">
+            <summary className="faq-accordion__q">Can more than one business sponsor the same category?</summary>
+            <div className="faq-accordion__a">
+              <p>No — one sponsor per category, so it actually means something.</p>
+            </div>
+          </details>
+          <details className="faq-accordion__item">
+            <summary className="faq-accordion__q">Is the free listing really free forever?</summary>
+            <div className="faq-accordion__a">
+              <p>Yes. Listing, climbing the rankings, and getting found costs nothing today or ever.</p>
+            </div>
+          </details>
+          <details className="faq-accordion__item">
+            <summary className="faq-accordion__q">What if I become a founding member and then never buy a promoted slot?</summary>
+            <div className="faq-accordion__a">
+              <p>
+                The price lock and badge are yours regardless — you&apos;re not obligated to use them, they&apos;re
+                just waiting whenever you do.
+              </p>
+            </div>
+          </details>
         </div>
 
         <div className="cta-band">
