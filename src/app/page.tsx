@@ -18,17 +18,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
       <main className="wrap">
         <div className="masthead">
           <div className="masthead-brand">
-            <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
-              <circle cx="20" cy="20" r="17" fill="none" stroke="#C1502E" strokeWidth="1.5" />
-              <path
-                d="M20 13v14M15 17l5 3 5-3M14 22l6 3 6-3"
-                stroke="#4B6B3A"
-                strokeWidth="1.3"
-                fill="none"
-                strokeLinecap="round"
-              />
-            </svg>
-            <div className="masthead-tagline">the friend who knows Wiltshire best</div>
+            <h1 className="masthead-tagline">the friend who knows Wiltshire best</h1>
           </div>
         </div>
 

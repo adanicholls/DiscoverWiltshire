@@ -1,24 +1,31 @@
 /* ---------------------------------------------------
    Discover Wiltshire — design tokens
-   Warm, badge-illustrated, "friend who knows Wiltshire
-   best but is also the official record" brand voice.
+   Visually modelled on producthunt.com: white background, near-black
+   text, a coral accent, thin light-gray borders, plain system-sans
+   type throughout (no serif), fully-rounded pill buttons, and flat
+   borderless list rows with a subtle hover highlight instead of
+   boxed cards. Values below were sampled directly from Product
+   Hunt's live site (computed styles), not guessed.
 
-   Ported from the original css/styles.css static prototype.
    Fonts are wired to next/font variables set in layout.tsx
-   (--font-inter, --font-fraunces) instead of a Google Fonts <link>.
+   (--font-inter, --font-fraunces) instead of a Google Fonts <link> -
+   --font-voice now just points at the same sans stack as --font-sans
+   (Fraunces stays loaded but unused) since Product Hunt has no serif
+   anywhere; every heading that used to use it re-skins automatically.
 --------------------------------------------------- */
 
 :root {
-  --bg: #F4EEE0;
+  --bg: #FFFFFF;
   --surface: #FFFFFF;
-  --ink: #2B2A28;
-  --ink-muted: #6B6864;
-  --border: rgba(43, 42, 40, 0.15);
+  --surface-muted: #F2F4F7;
+  --ink: #101828;
+  --ink-muted: #667085;
+  --border: #EAECF0;
 
-  --terracotta: #C1502E;
-  --terracotta-wash: rgba(193, 80, 46, 0.08);
-  --green: #4B6B3A;
-  --green-wash: #C9CFB5;
+  --terracotta: #FF6154;
+  --terracotta-wash: rgba(255, 97, 84, 0.08);
+  --green: #17B26A;
+  --green-wash: #D1FAE5;
   --mustard: #D9A441;
   --mustard-ink: #4A340A;
   --coral: #F0997B;
@@ -26,24 +33,25 @@
   --teal-wash: #9FE1CB;
   --teal-ink: #04342C;
 
-  --danger: #A32D2D;
+  --danger: #D92D20;
 
-  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-voice: var(--font-fraunces), Georgia, 'Times New Roman', serif;
+  --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-voice: var(--font-sans);
 
-  --radius: 10px;
-  --radius-lg: 14px;
+  --radius: 12px;
+  --radius-lg: 16px;
   --max-width: 1080px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #242220;
-    --surface: #2F2C29;
-    --ink: #F4EEE0;
-    --ink-muted: #B8B3AA;
-    --border: rgba(244, 238, 224, 0.15);
-    --terracotta-wash: rgba(193, 80, 46, 0.16);
+    --bg: #0C111D;
+    --surface: #101828;
+    --surface-muted: #1D2939;
+    --ink: #F2F4F7;
+    --ink-muted: #98A2B3;
+    --border: #1D2939;
+    --terracotta-wash: rgba(255, 97, 84, 0.16);
   }
 
   html {
@@ -78,7 +86,7 @@ img { max-width: 100%; display: block; }
 
 .site-header {
   position: relative;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 2px solid var(--border);
   background: var(--bg);
 }
 
@@ -255,7 +263,7 @@ img { max-width: 100%; display: block; }
 }
 
 .btn-primary { background: var(--terracotta); color: #fff; }
-.btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--border); }
+.btn-secondary { background: var(--surface); color: var(--ink); border: 2px solid var(--border); }
 .btn-dark { background: var(--ink); color: var(--bg); }
 .btn:disabled { opacity: 0.5; cursor: default; }
 
@@ -271,7 +279,7 @@ img { max-width: 100%; display: block; }
 }
 
 .masthead-brand { display: flex; align-items: center; gap: 12px; }
-.masthead-tagline { font-family: var(--font-voice); font-size: 17px; }
+.masthead-tagline { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
 
 /* ---------------- Homepage search bar ---------------- */
 /* The "I need X, near me, now" fast lane - prominent, but sized to sit
@@ -282,7 +290,7 @@ img { max-width: 100%; display: block; }
   align-items: stretch;
   gap: 0;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 2px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 4px;
   margin: 4px 0 22px;
@@ -326,8 +334,8 @@ img { max-width: 100%; display: block; }
 }
 
 .search-box {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--surface-muted);
+  border: 1px solid transparent;
   border-radius: 999px;
   padding: 9px 18px;
   font: inherit;
@@ -375,19 +383,23 @@ img { max-width: 100%; display: block; }
 
 /* ---------------- Leaderboard ---------------- */
 
-.leaderboard { display: flex; flex-direction: column; gap: 8px; padding: 6px 0 20px; }
+/* Rows are flat and borderless with a hover highlight, not boxed cards -
+   separated by a thin divider instead, matching Product Hunt's list. */
+.leaderboard { display: flex; flex-direction: column; padding: 6px 0 20px; }
 
 .lb-row {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: transparent;
   border-radius: var(--radius);
-  padding: 12px 16px;
+  padding: 14px 12px;
+  transition: background 0.15s ease;
 }
+.lb-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+.lb-row:hover { background: var(--surface-muted); }
 
-.lb-rank { font-family: var(--font-voice); font-size: 16px; opacity: 0.5; min-width: 18px; }
+.lb-rank { font-size: 15px; font-weight: 600; color: var(--ink-muted); min-width: 18px; }
 
 .lb-thumb { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
 
@@ -409,22 +421,31 @@ img { max-width: 100%; display: block; }
 .tag-new { background: var(--teal-wash); color: var(--teal-ink); }
 .tag-slot { background: #FAC775; color: #412402; }
 
+/* The rounded-square, 2px-bordered "vote" widget from Product Hunt -
+   neutral border until hovered or already-voted, when it (and its
+   contents) switch to the accent colour. */
 .upvote {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 46px;
-  padding: 7px 8px;
-  border-radius: 8px;
-  border: 1px solid rgba(193, 80, 46, 0.35);
-  background: var(--terracotta-wash);
+  min-width: 52px;
+  min-height: 52px;
+  padding: 6px 8px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--surface);
   cursor: pointer;
   font: inherit;
+  transition: border-color 0.15s ease;
 }
-.upvote-arrow { font-size: 14px; color: var(--terracotta); line-height: 1; }
-.upvote-count { font-size: 11px; font-weight: 500; color: var(--terracotta); }
-.upvote:disabled { opacity: 0.5; cursor: default; }
+.upvote-arrow { font-size: 14px; color: var(--ink-muted); line-height: 1; transition: color 0.15s ease; }
+.upvote-count { font-size: 13px; font-weight: 600; color: var(--ink); transition: color 0.15s ease; }
+.upvote:hover:not(:disabled) { border-color: var(--terracotta); }
+.upvote:hover:not(:disabled) .upvote-arrow,
+.upvote:hover:not(:disabled) .upvote-count { color: var(--terracotta); }
+.upvote:disabled { border-color: var(--terracotta); cursor: default; }
+.upvote:disabled .upvote-arrow, .upvote:disabled .upvote-count { color: var(--terracotta); }
 
 /* ---------------- Cards / sections ---------------- */
 
@@ -504,7 +525,7 @@ img { max-width: 100%; display: block; }
   transition: background 0.15s;
 }
 .event-side-row:not(:last-child) { border-bottom: 1px solid var(--border); }
-.event-side-row:hover { background: var(--surface); }
+.event-side-row:hover { background: var(--surface-muted); }
 .sidebar-card-header a:hover { opacity: 1; }
 
 @media (max-width: 860px) {
@@ -597,7 +618,7 @@ input[type="text"], input[type="tel"], input[type="url"], input[type="datetime-l
   padding: 10px 12px;
   border-radius: 8px;
   border: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--surface-muted);
   color: var(--ink);
 }
 

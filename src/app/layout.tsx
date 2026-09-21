@@ -1,20 +1,17 @@
 import type { Metadata } from "next";
-import { Fraunces, Inter } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-// next/font replaces the old <link> to Google Fonts from the static
-// prototype — same two typefaces (Fraunces for headlines/"voice"
-// moments, Inter for everything else), just self-hosted and optimised.
+// The site is now styled to resemble producthunt.com, which uses no
+// custom webfont at all (plain system-ui/-apple-system/Segoe UI) - Inter
+// is close enough to that look to keep as the one loaded family, self-
+// hosted and optimised via next/font. Fraunces (the old serif "voice"
+// font) has been dropped entirely: --font-voice in globals.css now just
+// points at this same stack, so nothing references it anymore.
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
-});
-
-const fraunces = Fraunces({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  variable: "--font-fraunces",
 });
 
 export const metadata: Metadata = {
@@ -25,7 +22,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${inter.variable} ${fraunces.variable}`}>
+    <html lang="en" className={inter.variable}>
       <body>{children}</body>
     </html>
   );
