@@ -36,7 +36,8 @@ npm run dev
 | `/pricing` | Pricing copy for all revenue lines (promoted slots, category and town sponsorship, featured upgrade, founding membership) |
 | `/admin`, `/admin/businesses`, `/admin/businesses/[id]/edit` | Approval queue and business editor — real Supabase Auth login required, gated by `src/proxy.ts` and re-checked in every Server Action |
 | `/admin/categories`, `/admin/events`, `/admin/sponsors` | Manage trade categories, the events calendar, and the sponsor shown on each category/town page (image upload goes to the public `sponsor-images` Storage bucket) |
-| `/about`, `/whats-on` | Placeholder pages so nav links aren't dead — flagged on-page as needing real content |
+| `/journal` | Placeholder page (formerly "Our story" at `/about`, which now redirects here) — what the journal contains hasn't been decided yet |
+| `/whats-on`, `/whats-on/add` | The events calendar and its public submission form (events are approved in `/admin`) |
 
 ## Data model
 
@@ -73,7 +74,7 @@ Defined in `src/app/globals.css` as CSS custom properties:
 1. Wire up Stripe for the four paid products in `/pricing`.
 2. Add authentication for business owners to claim and edit their own listing (the `businesses.owner_id` column already exists for this).
 3. Replace the placeholder photo colour blocks with real image handling (Supabase Storage).
-4. Write real copy for `/about` and decide the scope of `/whats-on`.
+4. Decide what the journal (`/journal`) is — editorial posts? who writes and manages them? — and build it.
 5. Wire the Today/This week/This month toggle to real vote timestamps.
 
 ## A note on the pricing figures

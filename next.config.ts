@@ -9,6 +9,11 @@ const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
   : null;
 
 const nextConfig: NextConfig = {
+  // "Our story" (/about) became the Journal - keep old links and bookmarks
+  // working with a permanent redirect.
+  async redirects() {
+    return [{ source: "/about", destination: "/journal", permanent: true }];
+  },
   images: {
     remotePatterns: supabaseHost
       ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/sponsor-images/**" }]

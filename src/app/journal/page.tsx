@@ -3,19 +3,18 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Our story — Discover Wiltshire",
+  title: "Journal — Discover Wiltshire",
 };
 
-export default function AboutPage() {
+export default function JournalPage() {
   return (
     <>
       <Header />
       <main className="wrap" style={{ maxWidth: 640 }}>
-        <h1 className="page-title">our story</h1>
+        <h1 className="page-title">journal</h1>
         <p className="placeholder-note">
-          This page hasn&apos;t been written yet in the design brief — this is placeholder copy so the nav link
-          isn&apos;t dead. Worth writing for real once the rest of the site is settled, since it&apos;s where the
-          &quot;official, trusted authority&quot; side of the brand gets to speak in full.
+          This page is a placeholder — what goes in the journal, and who writes it, hasn&apos;t been decided yet. For
+          now it&apos;s just an intro so the nav link isn&apos;t dead.
         </p>
         <p style={{ fontSize: 14, opacity: 0.8, lineHeight: 1.7 }}>
           Discover Wiltshire started as a simple idea: the county&apos;s best places shouldn&apos;t be something you

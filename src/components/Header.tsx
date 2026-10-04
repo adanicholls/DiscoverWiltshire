@@ -49,7 +49,7 @@ export default function Header() {
     );
   const advertiseActive = pathname === "/list-your-business" || pathname === "/pricing";
   const whatsOnActive = pathname === "/whats-on";
-  const storyActive = pathname === "/about";
+  const journalActive = pathname === "/journal" || pathname.startsWith("/journal/");
 
   function show(which: MenuKey) {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -122,8 +122,8 @@ export default function Header() {
             >
               Advertise
             </button>
-            <Link className={"nav-item" + (storyActive ? " active" : "")} aria-current={storyActive ? "page" : undefined} href="/about" onClick={closeAll}>
-              Our story
+            <Link className={"nav-item" + (journalActive ? " active" : "")} aria-current={journalActive ? "page" : undefined} href="/journal" onClick={closeAll}>
+              Journal
             </Link>
           </nav>
 
