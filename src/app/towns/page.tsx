@@ -29,7 +29,7 @@ export default function TownsPage() {
           }}
         >
           {TOWNS.map((town) => (
-            <Link key={town.id} className="card" href={`/towns/${town.id}`} style={{ cursor: "pointer" }}>
+            <Link key={town.id} className="card town-card" href={`/towns/${town.id}`}>
               <div style={{ fontSize: 14, fontWeight: 500 }}>{town.label}</div>
               <div style={{ fontSize: 12, opacity: 0.6, marginTop: 2 }}>see what&apos;s ranked here</div>
             </Link>

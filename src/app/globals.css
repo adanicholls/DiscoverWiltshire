@@ -474,6 +474,11 @@ img { max-width: 100%; display: block; }
 
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
 
+/* A card that's a link (e.g. the /towns grid) gets the same grey hover
+   highlight as list rows and menu entries. */
+.town-card { cursor: pointer; transition: background 0.15s ease; }
+.town-card:hover, .town-card:focus-visible { background: var(--surface-muted); }
+
 .cta-band {
   margin: 8px 0 28px;
   padding: 28px 22px;
