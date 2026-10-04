@@ -33,7 +33,7 @@ npm run dev
 | `/towns`, `/towns/[slug]` | A directory of Wiltshire's major towns, plus one generic page per town mixing every category — see `TOWNS` in `src/lib/data.ts` |
 | `/business/[id]` | Individual business profile page |
 | `/list-your-business` | Free listing submission form, with an optional founding-membership add-on |
-| `/pricing` | Pricing copy for all revenue lines (promoted slots, category sponsorship, featured upgrade, founding membership) |
+| `/pricing` | Pricing copy for all revenue lines (promoted slots, category and town sponsorship, featured upgrade, founding membership) |
 | `/admin`, `/admin/businesses`, `/admin/businesses/[id]/edit` | Approval queue and business editor — real Supabase Auth login required, gated by `src/proxy.ts` and re-checked in every Server Action |
 | `/about`, `/whats-on` | Placeholder pages so nav links aren't dead — flagged on-page as needing real content |
 
@@ -62,7 +62,7 @@ Defined in `src/app/globals.css` as CSS custom properties:
 
 - **Promoted-slot logic is simplified.** The brief calls for exactly 4 sellable positions per list, backfilled by the next-best organic business when unsold. The site just pins any `promoted: true` business to the top instead — fine for demonstrating the idea, not fine for production, where the 4-slot cap needs real enforcement.
 - **The Today / This week / This month toggle is cosmetic.** Votes now carry real timestamps (`votes.created_at`), so real period filtering is a query away — it's just not wired up to those buttons yet.
-- **No payments are wired up.** Promoted slots, category sponsorship, the featured upgrade, and founding membership all need real checkout (Stripe) plus the "paid but pending approval" state the approval queue currently only half-models.
+- **No payments are wired up.** Promoted slots, category and town sponsorship, the featured upgrade, and founding membership all need real checkout (Stripe) plus the "paid but pending approval" state the approval queue currently only half-models. Sponsorships are also copy-only so far: the Eat & drink sponsor banner is a single hardcoded entry (`CATEGORY_SPONSORS` in `src/lib/data.ts`), and town pages have no sponsor banner yet.
 - **No authentication for business owners** managing their own listing (the admin side is real; a business claiming/editing its own profile isn't built).
 - **Comments/testimonials are hand-seeded**, not a real submission system.
 
@@ -76,4 +76,4 @@ Defined in `src/app/globals.css` as CSS custom properties:
 
 ## A note on the pricing figures
 
-The numbers on `/pricing` (£25/week category slots, £50/week homepage slots, £150/month category sponsorship, £75 featured upgrade, £99 founding membership) were suggested starting points from the original design conversation, not confirmed final pricing. Sanity-check them against real Wiltshire businesses before launch.
+The numbers on `/pricing` (£25/week category slots, £50/week homepage slots, £150/month category sponsorship, £100/month town sponsorship, £75 featured upgrade, £99 founding membership) were suggested starting points from the original design conversation, not confirmed final pricing. Sanity-check them against real Wiltshire businesses before launch.

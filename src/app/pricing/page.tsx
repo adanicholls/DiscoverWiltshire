@@ -77,7 +77,7 @@ export default function PricingPage() {
         .pricing-bento {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          grid-template-areas: "hero hero" "promoted sponsor" "stat founding";
+          grid-template-areas: "hero hero" "promoted sponsor" "town founding" "stat stat";
           gap: 12px;
           margin: 20px 0 8px;
         }
@@ -142,7 +142,9 @@ export default function PricingPage() {
         .pricing-bento__cta-sm:hover { background: var(--terracotta-wash); }
         .pricing-bento__promoted { grid-area: promoted; }
         .pricing-bento__sponsor { grid-area: sponsor; }
-        .pricing-bento__stat { grid-area: stat; align-items: flex-start; }
+        .pricing-bento__town { grid-area: town; }
+        /* A slim full-width strip along the bottom rather than a square tile. */
+        .pricing-bento__stat { grid-area: stat; flex-direction: row; align-items: center; justify-content: flex-start; gap: 14px; min-height: 0; }
         .pricing-bento__stat-num { font-family: var(--font-voice); font-size: clamp(28px, 4vw, 40px); color: var(--terracotta); }
         .pricing-bento__stat-lbl { font-size: 12px; opacity: 0.7; line-height: 1.4; }
         .pricing-bento__founding { grid-area: founding; background: var(--ink); color: var(--bg); border: 0; }
@@ -150,7 +152,7 @@ export default function PricingPage() {
         .pricing-bento__founding .pricing-bento__cta-sm:hover { background: rgba(244,238,224,0.12); }
 
         @media (max-width: 480px) {
-          .pricing-bento { grid-template-columns: 1fr; grid-template-areas: "hero" "promoted" "sponsor" "stat" "founding"; }
+          .pricing-bento { grid-template-columns: 1fr; grid-template-areas: "hero" "promoted" "sponsor" "town" "founding" "stat"; }
         }
       `}</style>
 
@@ -205,6 +207,17 @@ export default function PricingPage() {
             </div>
             <p>Your name on an entire category&apos;s masthead.</p>
             <a className="pricing-bento__cta-sm" href="#category-sponsorship">
+              Details →
+            </a>
+          </article>
+
+          <article className="pricing-bento__tile pricing-bento__town">
+            <h3>Sponsor a town</h3>
+            <div className="pricing-bento__price">
+              £100<span>/calendar month</span>
+            </div>
+            <p>Your name on a town page&apos;s masthead.</p>
+            <a className="pricing-bento__cta-sm" href="#town-sponsorship">
               Details →
             </a>
           </article>
@@ -283,6 +296,19 @@ export default function PricingPage() {
           </p>
         </div>
 
+        <div className="price-section" id="town-sponsorship">
+          <div className="price-head">
+            <h2>Sponsor a town page</h2>
+            <span className="price-tag">£100 per calendar month</span>
+          </div>
+          <p style={bodyText}>
+            Put your name on a town&apos;s page — &quot;Devizes, in partnership with [your business]&quot; — for as
+            long as you hold the sponsorship. Like a category sponsorship, this is a masthead credit, not a ranking
+            boost: it buys visibility and goodwill with the people browsing that town, not a numbered position. One
+            sponsor per town at a time.
+          </p>
+        </div>
+
         <div className="price-section">
           <div className="price-head">
             <h2>Featured listing upgrade</h2>
@@ -337,9 +363,9 @@ export default function PricingPage() {
             </div>
           </details>
           <details className="faq-accordion__item">
-            <summary className="faq-accordion__q">Can more than one business sponsor the same category?</summary>
+            <summary className="faq-accordion__q">Can more than one business sponsor the same category or town?</summary>
             <div className="faq-accordion__a">
-              <p>No — one sponsor per category, so it actually means something.</p>
+              <p>No — one sponsor per category and one per town, so it actually means something.</p>
             </div>
           </details>
           <details className="faq-accordion__item">
