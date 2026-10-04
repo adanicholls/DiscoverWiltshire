@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Link from "next/link";
+import RemoteImage from "@/components/RemoteImage";
 import { Store, type SponsorTargetType } from "@/lib/store";
 import { readableTextOn, websiteDomain } from "@/lib/sponsors";
 
@@ -42,10 +42,9 @@ export default async function SponsorCard({ type, id, label }: Props) {
       <span className="sponsor-card__tag">Sponsored</span>
       <div className="sponsor-card__media">
         {sponsor.imageUrl ? (
-          <Image
+          <RemoteImage
             src={sponsor.imageUrl}
             alt={sponsor.sponsorName}
-            fill
             sizes="(max-width: 860px) 100vw, 300px"
             className="sponsor-card__img"
           />

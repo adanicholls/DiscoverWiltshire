@@ -36,7 +36,8 @@ npm run dev
 | `/pricing` | Pricing copy for all revenue lines (promoted slots, category and town sponsorship, featured upgrade, founding membership) |
 | `/admin`, `/admin/businesses`, `/admin/businesses/[id]/edit` | Approval queue and business editor — real Supabase Auth login required, gated by `src/proxy.ts` and re-checked in every Server Action |
 | `/admin/categories`, `/admin/events`, `/admin/sponsors` | Manage trade categories, the events calendar, and the sponsor shown on each category/town page (image upload goes to the public `sponsor-images` Storage bucket) |
-| `/journal` | Placeholder page (formerly "Our story" at `/about`, which now redirects here) — what the journal contains hasn't been decided yet |
+| `/admin/journal`, `/admin/journal/new`, `/admin/journal/[id]/edit` | Write and manage Journal entries: Markdown editor with toolbar, live preview and inline image upload (to the public `journal-images` bucket), drafts, and scheduling by setting a future publish date |
+| `/journal`, `/journal/[slug]` | The Journal (formerly "Our story" at `/about`, which redirects here). The index is a filterable card grid with "Load more"; an **article** has its own page (sticky title column beside the article, share buttons, related entries), a **news** card links out to another site. `/journal?category=…` and `?type=news` are shareable filtered views |
 | `/whats-on`, `/whats-on/add` | The events calendar and its public submission form (events are approved in `/admin`) |
 
 ## Data model
@@ -48,6 +49,7 @@ Everything lives in Supabase — see `supabase/migrations/` for the full schema 
 - **`votes`** — one row per (business, anonymous voter id), with real timestamps. A unique constraint enforces one vote per visitor server-side, not just client-side bookkeeping. Individual votes aren't publicly readable (privacy); live counts come from the `business_vote_counts` view instead.
 - **`upgrade_requests`** — promoted-slot / founding-member purchases against an *existing* business, reviewed alongside pending listings in the admin queue.
 - **`sponsorships`** — the "Sponsored" card on a category or town page: one row per sponsored page (`target_type` is `category` or `town`, `target_id` the id), unique per page. Superseded the old `category_sponsors` table, which is left in place but unused.
+- **`journal_entries`** — the Journal. `entry_type` is `article` (Markdown `body`, own page at `/journal/<slug>`) or `news` (`external_url` + button text, no page of its own). `category` is free text — the filter pills are built from whichever categories published entries use. Row-level security only lets the public read entries that are `published` **and** whose `published_at` has arrived, so drafts and scheduled entries can't leak through the API; all writes go through the admin with the service-role key.
 - **`testimonials`**, **`events`** — smaller supporting tables.
 
 `src/lib/store.ts` is the single place that talks to Supabase for the public site (reads, votes, submissions) — same function shapes throughout, so components don't need to know it's a network call. The admin area uses its own service-role client (`src/lib/supabase-admin.ts`) since it needs to bypass RLS.
@@ -73,9 +75,8 @@ Defined in `src/app/globals.css` as CSS custom properties:
 
 1. Wire up Stripe for the four paid products in `/pricing`.
 2. Add authentication for business owners to claim and edit their own listing (the `businesses.owner_id` column already exists for this).
-3. Replace the placeholder photo colour blocks with real image handling (Supabase Storage).
-4. Decide what the journal (`/journal`) is — editorial posts? who writes and manages them? — and build it.
-5. Wire the Today/This week/This month toggle to real vote timestamps.
+3. Give businesses real photos instead of placeholder colour blocks — the Storage-upload pattern already exists for sponsors and the journal (`src/app/admin/journal-actions.ts` is the fullest example).
+4. Wire the Today/This week/This month toggle to real vote timestamps.
 
 ## A note on the pricing figures
 

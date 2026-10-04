@@ -1,26 +1,37 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import JournalArchive from "@/components/journal/JournalArchive";
+import { Store } from "@/lib/store";
+import { buildCategoryOptions, filterFromParams } from "@/lib/journal";
+import "@/components/journal/journal.css";
 
 export const metadata: Metadata = {
   title: "Journal — Discover Wiltshire",
+  description: "Stories, guides and local news from around Wiltshire.",
 };
 
-export default function JournalPage() {
+export default async function JournalPage({ searchParams }: PageProps<"/journal">) {
+  const params = await searchParams;
+  const entries = await Store.getJournalEntries();
+
+  // A shared link like /journal?category=guides opens already filtered; an
+  // unknown category just shows everything.
+  const filter = filterFromParams(
+    {
+      category: typeof params.category === "string" ? params.category : undefined,
+      type: typeof params.type === "string" ? params.type : undefined,
+    },
+    buildCategoryOptions(entries),
+    entries.some((e) => e.type === "news")
+  );
+
   return (
     <>
       <Header />
-      <main className="wrap" style={{ maxWidth: 640 }}>
-        <h1 className="page-title">journal</h1>
-        <p className="placeholder-note">
-          This page is a placeholder — what goes in the journal, and who writes it, hasn&apos;t been decided yet. For
-          now it&apos;s just an intro so the nav link isn&apos;t dead.
-        </p>
-        <p style={{ fontSize: 14, opacity: 0.8, lineHeight: 1.7 }}>
-          Discover Wiltshire started as a simple idea: the county&apos;s best places shouldn&apos;t be something you
-          only find out about by chance. Every listing here is ranked by the people who actually visit — not by who
-          pays the most, and not by us.
-        </p>
+      <main className="wrap" style={{ paddingBottom: 72 }}>
+        <h1 className="journal-intro">Stories, guides and local news from around Wiltshire.</h1>
+        <JournalArchive entries={entries} initialFilter={filter} />
       </main>
       <Footer />
     </>

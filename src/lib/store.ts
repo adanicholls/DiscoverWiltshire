@@ -12,6 +12,16 @@
 
 import { supabase } from "./supabase";
 import { CATEGORY_LABELS_CORE, type Business, type Testimonial, type TradeCategory } from "./data";
+import {
+  JOURNAL_ENTRY_COLUMNS,
+  JOURNAL_SUMMARY_COLUMNS,
+  mapJournalEntryRow,
+  mapJournalSummaryRow,
+  type JournalEntry,
+  type JournalEntryRow,
+  type JournalSummary,
+  type JournalSummaryRow,
+} from "./journal";
 
 export interface LiveBusiness extends Business {
   liveVotes: number;
@@ -399,6 +409,39 @@ export const Store = {
       return null;
     }
     return data ? mapSponsorshipRow(data as SponsorshipRow) : null;
+  },
+
+  // The Journal's cards, newest first. Row-level security already limits
+  // the public role to published entries whose date has arrived, so drafts
+  // and scheduled entries can't appear here. A failed lookup returns an
+  // empty list (logged) rather than taking the page down.
+  async getJournalEntries(limit?: number): Promise<JournalSummary[]> {
+    let query = supabase
+      .from("journal_entries")
+      .select(JOURNAL_SUMMARY_COLUMNS)
+      .order("published_at", { ascending: false });
+    if (limit) query = query.limit(limit);
+
+    const { data, error } = await query;
+    if (error) {
+      console.error("Failed to load journal entries:", error);
+      return [];
+    }
+    return (data as JournalSummaryRow[]).map(mapJournalSummaryRow);
+  },
+
+  // One live entry by its address, or null (unknown, draft, or not yet due).
+  async getJournalEntryBySlug(slug: string): Promise<JournalEntry | null> {
+    const { data, error } = await supabase
+      .from("journal_entries")
+      .select(JOURNAL_ENTRY_COLUMNS)
+      .eq("slug", slug)
+      .maybeSingle();
+    if (error) {
+      console.error("Failed to load journal entry:", error);
+      return null;
+    }
+    return data ? mapJournalEntryRow(data as JournalEntryRow) : null;
   },
 
   // Trade categories (e.g. "Painters", "Plumbers") are admin-editable via
