@@ -1,10 +1,9 @@
-import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Leaderboard from "@/components/Leaderboard";
 import CategoryTabs from "@/components/CategoryTabs";
 import LocationFilter from "@/components/LocationFilter";
-import EventsList from "@/components/EventsList";
+import SidebarEvents from "@/components/SidebarEvents";
 import HomeSearchBar from "@/components/HomeSearchBar";
 
 export default async function HomePage({ searchParams }: PageProps<"/">) {
@@ -51,13 +50,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
           </div>
 
           <aside className="home-sidebar">
-            <div className="sidebar-card">
-              <div className="sidebar-card-header">
-                <h2 className="section-heading">what&apos;s on</h2>
-                <Link href="/whats-on">See all →</Link>
-              </div>
-              <EventsList limit={3} />
-            </div>
+            <SidebarEvents />
           </aside>
         </div>
 

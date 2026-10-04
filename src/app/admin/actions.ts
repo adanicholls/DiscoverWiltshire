@@ -4,6 +4,17 @@ import { revalidatePath } from "next/cache";
 import { getAdminSession } from "@/lib/supabase-server";
 import { createSupabaseAdminClient } from "@/lib/supabase-admin";
 import { slugifyBase } from "@/lib/slug";
+import { Store } from "@/lib/store";
+import { TOWN_LABELS } from "@/lib/data";
+import {
+  SPONSOR_DEFAULT_COLOR,
+  SPONSOR_IMAGE_BUCKET,
+  SPONSOR_IMAGE_MAX_BYTES,
+  SPONSOR_IMAGE_TYPES,
+  isHexColor,
+  normalizeWebsite,
+  sponsorImagePath,
+} from "@/lib/sponsors";
 
 // Every action re-checks admin status itself rather than trusting that it
 // was only reachable via an already-gated page - Server Actions are
@@ -227,4 +238,158 @@ export async function deleteCategory(id: string): Promise<void> {
 
   revalidatePath("/admin/categories");
   revalidatePath("/trades", "layout");
+}
+
+// Sponsorships: the image-led "Sponsored" card on a category or town page.
+//
+// Unlike the actions above these *return* a result instead of throwing for
+// problems the admin can fix (bad link, wrong file type, "that town already
+// has a sponsor"): Next masks the message of a thrown error in production
+// builds, and the whole point here is telling them what to change.
+export type SponsorActionResult = { ok: true } | { ok: false; error: string };
+
+const IMAGE_EXTENSIONS: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
+
+function revalidateSponsorPages() {
+  revalidatePath("/admin/sponsors");
+  // Town pages are statically generated; category pages render per request.
+  revalidatePath("/towns/[slug]", "page");
+}
+
+export async function saveSponsorship(formData: FormData): Promise<SponsorActionResult> {
+  await requireAdmin();
+
+  try {
+    const id = String(formData.get("id") ?? "");
+    const targetType = String(formData.get("target_type") ?? "");
+    const targetId = String(formData.get("target_id") ?? "");
+    const sponsorName = String(formData.get("sponsor_name") ?? "").trim();
+    const headline = String(formData.get("headline") ?? "").trim();
+    const website = normalizeWebsite(String(formData.get("website") ?? ""));
+    const colorInput = String(formData.get("photo_color") ?? "");
+    const photoColor = isHexColor(colorInput) ? colorInput : SPONSOR_DEFAULT_COLOR;
+    const removeImage = formData.get("remove_image") === "on";
+    const file = formData.get("image");
+
+    if (targetType !== "category" && targetType !== "town") {
+      throw new Error("Choose whether this sponsors a category or a town");
+    }
+    if (!targetId) throw new Error("Choose which page is being sponsored");
+    if (!sponsorName) throw new Error("Enter the sponsor's name");
+    if (sponsorName.length > 80) throw new Error("The sponsor's name is too long (80 characters max)");
+    if (headline.length > 120) throw new Error("The headline is too long (120 characters max)");
+
+    // target_id has no foreign key (it points at two different tables), so
+    // check here that it names something real.
+    if (targetType === "town") {
+      if (!TOWN_LABELS[targetId]) throw new Error("That town doesn't exist");
+    } else {
+      const labels = await Store.getCategoryLabels();
+      if (!labels[targetId]) throw new Error("That category doesn't exist");
+    }
+
+    const supabase = createSupabaseAdminClient();
+
+    let existingImageUrl = "";
+    if (id) {
+      const { data: existing, error: existingError } = await supabase
+        .from("sponsorships")
+        .select("image_url")
+        .eq("id", id)
+        .maybeSingle();
+      if (existingError) throw existingError;
+      if (!existing) throw new Error("That sponsorship no longer exists");
+      existingImageUrl = existing.image_url;
+    }
+
+    let imageUrl = existingImageUrl;
+    let uploadedPath: string | null = null;
+
+    if (file instanceof File && file.size > 0) {
+      if (!SPONSOR_IMAGE_TYPES.includes(file.type)) {
+        throw new Error("The image must be a PNG, JPG, WebP or GIF");
+      }
+      if (file.size > SPONSOR_IMAGE_MAX_BYTES) {
+        throw new Error("The image is too big - 2MB is the most it can be");
+      }
+      const path = `${crypto.randomUUID()}.${IMAGE_EXTENSIONS[file.type]}`;
+      const { error: uploadError } = await supabase.storage
+        .from(SPONSOR_IMAGE_BUCKET)
+        .upload(path, Buffer.from(await file.arrayBuffer()), { contentType: file.type });
+      if (uploadError) throw new Error(`Couldn't upload the image: ${uploadError.message}`);
+      uploadedPath = path;
+      imageUrl = supabase.storage.from(SPONSOR_IMAGE_BUCKET).getPublicUrl(path).data.publicUrl;
+    } else if (removeImage) {
+      imageUrl = "";
+    }
+
+    const row = {
+      target_type: targetType,
+      target_id: targetId,
+      sponsor_name: sponsorName,
+      headline,
+      website,
+      image_url: imageUrl,
+      photo_color: photoColor,
+    };
+    const { error: saveError } = id
+      ? await supabase.from("sponsorships").update(row).eq("id", id)
+      : await supabase.from("sponsorships").insert(row);
+
+    if (saveError) {
+      // Don't leave the image we just uploaded orphaned in the bucket.
+      if (uploadedPath) await supabase.storage.from(SPONSOR_IMAGE_BUCKET).remove([uploadedPath]);
+      if (saveError.code === "23505") {
+        throw new Error(
+          `That ${targetType} already has a sponsor - edit or delete the existing one instead of adding another`
+        );
+      }
+      throw saveError;
+    }
+
+    // The saved row no longer points at the old image if it was replaced or
+    // removed, so it can go (best effort - a leftover file is harmless).
+    if (existingImageUrl && imageUrl !== existingImageUrl) {
+      const oldPath = sponsorImagePath(existingImageUrl);
+      if (oldPath) await supabase.storage.from(SPONSOR_IMAGE_BUCKET).remove([oldPath]);
+    }
+
+    revalidateSponsorPages();
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Something went wrong" };
+  }
+}
+
+export async function deleteSponsorship(id: string): Promise<SponsorActionResult> {
+  await requireAdmin();
+
+  try {
+    const supabase = createSupabaseAdminClient();
+
+    const { data: existing, error: existingError } = await supabase
+      .from("sponsorships")
+      .select("image_url")
+      .eq("id", id)
+      .maybeSingle();
+    if (existingError) throw existingError;
+
+    const { error } = await supabase.from("sponsorships").delete().eq("id", id);
+    if (error) throw error;
+
+    if (existing?.image_url) {
+      const path = sponsorImagePath(existing.image_url);
+      if (path) await supabase.storage.from(SPONSOR_IMAGE_BUCKET).remove([path]);
+    }
+
+    revalidateSponsorPages();
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Something went wrong" };
+  }
 }

@@ -28,13 +28,14 @@ npm run dev
 | Route | What it is |
 |---|---|
 | `/` | Homepage — the master leaderboard across all categories, with search and a town filter |
-| `/eat-drink`, `/stay`, `/things-to-do`, `/shops` | The four core category pages (Eat & drink carries the example category sponsor banner) |
+| `/eat-drink`, `/stay`, `/things-to-do`, `/shops` | The four core category pages — each with a sponsor card and upcoming events in a right-hand column |
 | `/trades`, `/trades/[slug]` | Trades & services hub, plus one generic page for each of 30 trade categories — see `TRADE_CATEGORIES` in `src/lib/data.ts` to add more |
 | `/towns`, `/towns/[slug]` | A directory of Wiltshire's major towns, plus one generic page per town mixing every category — see `TOWNS` in `src/lib/data.ts` |
 | `/business/[id]` | Individual business profile page |
 | `/list-your-business` | Free listing submission form, with an optional founding-membership add-on |
 | `/pricing` | Pricing copy for all revenue lines (promoted slots, category and town sponsorship, featured upgrade, founding membership) |
 | `/admin`, `/admin/businesses`, `/admin/businesses/[id]/edit` | Approval queue and business editor — real Supabase Auth login required, gated by `src/proxy.ts` and re-checked in every Server Action |
+| `/admin/categories`, `/admin/events`, `/admin/sponsors` | Manage trade categories, the events calendar, and the sponsor shown on each category/town page (image upload goes to the public `sponsor-images` Storage bucket) |
 | `/about`, `/whats-on` | Placeholder pages so nav links aren't dead — flagged on-page as needing real content |
 
 ## Data model
@@ -45,7 +46,8 @@ Everything lives in Supabase — see `supabase/migrations/` for the full schema 
 - **`businesses`** — one row per listing, `status` of `pending`/`approved`/`declined`. New submissions insert directly here with `status='pending'` (RLS only allows that), rather than a separate submissions table.
 - **`votes`** — one row per (business, anonymous voter id), with real timestamps. A unique constraint enforces one vote per visitor server-side, not just client-side bookkeeping. Individual votes aren't publicly readable (privacy); live counts come from the `business_vote_counts` view instead.
 - **`upgrade_requests`** — promoted-slot / founding-member purchases against an *existing* business, reviewed alongside pending listings in the admin queue.
-- **`testimonials`**, **`category_sponsors`**, **`events`** — smaller supporting tables.
+- **`sponsorships`** — the "Sponsored" card on a category or town page: one row per sponsored page (`target_type` is `category` or `town`, `target_id` the id), unique per page. Superseded the old `category_sponsors` table, which is left in place but unused.
+- **`testimonials`**, **`events`** — smaller supporting tables.
 
 `src/lib/store.ts` is the single place that talks to Supabase for the public site (reads, votes, submissions) — same function shapes throughout, so components don't need to know it's a network call. The admin area uses its own service-role client (`src/lib/supabase-admin.ts`) since it needs to bypass RLS.
 
@@ -62,7 +64,7 @@ Defined in `src/app/globals.css` as CSS custom properties:
 
 - **Promoted-slot logic is simplified.** The brief calls for exactly 4 sellable positions per list, backfilled by the next-best organic business when unsold. The site just pins any `promoted: true` business to the top instead — fine for demonstrating the idea, not fine for production, where the 4-slot cap needs real enforcement.
 - **The Today / This week / This month toggle is cosmetic.** Votes now carry real timestamps (`votes.created_at`), so real period filtering is a query away — it's just not wired up to those buttons yet.
-- **No payments are wired up.** Promoted slots, category and town sponsorship, the featured upgrade, and founding membership all need real checkout (Stripe) plus the "paid but pending approval" state the approval queue currently only half-models. Sponsorships are also copy-only so far: the Eat & drink sponsor banner is a single hardcoded entry (`CATEGORY_SPONSORS` in `src/lib/data.ts`), and town pages have no sponsor banner yet.
+- **No payments are wired up.** Promoted slots, category and town sponsorship, the featured upgrade, and founding membership all need real checkout (Stripe) plus the "paid but pending approval" state the approval queue currently only half-models. Sponsors themselves are set up by hand in `/admin/sponsors` after the deal is agreed, and there's no end date — replacing or removing a sponsor when their month is up is manual.
 - **No authentication for business owners** managing their own listing (the admin side is real; a business claiming/editing its own profile isn't built).
 - **Comments/testimonials are hand-seeded**, not a real submission system.
 

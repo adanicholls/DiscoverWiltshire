@@ -3,15 +3,16 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Leaderboard from "@/components/Leaderboard";
-import EventsList from "@/components/EventsList";
+import PageSidebar from "@/components/PageSidebar";
 import { TOWNS, TOWN_LABELS, DIRECT_CATEGORY_PAGES } from "@/lib/data";
 import { Store } from "@/lib/store";
 
-// The ranked sections load client-side, but the events sidebar is rendered
-// on the server - so without this the page would freeze whatever events
-// existed at build time (including ones that have since passed). Five
-// minutes bounds that for time-based changes; the event admin actions also
-// revalidate this route on demand so an approval appears immediately.
+// The ranked sections load client-side, but the sidebar (this town's sponsor
+// and its events) is rendered on the server - so without this the page would
+// freeze whatever existed at build time, including events that have since
+// passed. Five minutes bounds that for time-based changes; the event and
+// sponsor admin actions also revalidate this route on demand so a change
+// appears immediately.
 export const revalidate = 300;
 
 // One generic page serves every town via /towns/<slug>, same pattern as
@@ -69,8 +70,8 @@ export default async function TownPage({ params }: PageProps<"/towns/[slug]">) {
         </p>
 
         {/* Same two-column shape as the homepage: the ranked sections on the
-            left, this town's upcoming events in a sidebar on the right
-            (stacking below on narrow screens). */}
+            left, this town's sponsor and upcoming events in a sidebar on the
+            right (stacking below on narrow screens, sponsor first). */}
         <div className="home-layout home-layout--single-row">
           <div className="home-main">
             {DIRECT_CATEGORY_PAGES.map((catId) => (
@@ -96,15 +97,7 @@ export default async function TownPage({ params }: PageProps<"/towns/[slug]">) {
             </section>
           </div>
 
-          <aside className="home-sidebar">
-            <div className="sidebar-card">
-              <div className="sidebar-card-header">
-                <h2 className="section-heading">what&apos;s on in {label}</h2>
-                <Link href={`/whats-on?town=${slug}`}>See all →</Link>
-              </div>
-              <EventsList limit={3} town={slug} />
-            </div>
-          </aside>
+          <PageSidebar sponsor={{ type: "town", id: slug, label }} town={slug} />
         </div>
 
         <div className="cta-band">

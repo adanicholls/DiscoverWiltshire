@@ -490,14 +490,70 @@ img { max-width: 100%; display: block; }
 .cta-band h3 { font-family: var(--font-voice); font-size: 18px; margin: 0 0 6px; font-weight: 400; }
 .cta-band p { font-size: 13px; opacity: 0.75; margin: 0 0 16px; }
 
-.category-sponsor {
-  background: var(--ink);
-  color: var(--bg);
-  font-size: 12px;
+/* ---------------- Sponsor card ---------------- */
+/* An image-led ad in the right-hand column of category and town pages (see
+   SponsorCard): "Sponsored" tag, the creative, who it's in partnership with,
+   a headline, and the sponsor's domain. The whole card is the link. */
+
+.sponsor-card {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  color: inherit;
+  transition: background 0.15s ease;
+}
+.sponsor-card--link { cursor: pointer; }
+.sponsor-card--link:hover,
+.sponsor-card--link:focus-visible { background: var(--surface-muted); }
+
+.sponsor-card__tag {
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  border: 1px solid var(--border);
+  padding: 1px 8px;
+  border-radius: 999px;
+}
+
+.sponsor-card__media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--surface-muted);
+}
+.sponsor-card__img { object-fit: cover; }
+.sponsor-card__fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
   align-items: center;
-  padding: 12px 0;
+  justify-content: center;
+  font-size: 64px;
+  font-weight: 700;
+}
+
+.sponsor-card__eyebrow { font-size: 11px; color: var(--ink-muted); margin-top: 2px; }
+.sponsor-card__name { font-size: 15px; font-weight: 600; line-height: 1.3; }
+.sponsor-card__headline { font-size: 13px; color: var(--ink-muted); line-height: 1.4; }
+.sponsor-card__domain { font-size: 12px; color: var(--ink-muted); }
+
+/* An unsold slot: same footprint, no creative, dashed so it reads as an
+   invitation rather than an ad. */
+.sponsor-card--house { border-style: dashed; background: transparent; }
+
+@media (min-width: 861px) {
+  /* Square creative in the narrow sidebar, wider 16:10 once it goes full
+     width on phones. */
+  .sponsor-card__media { aspect-ratio: 1 / 1; }
 }
 
 /* ---------------- Homepage layout ---------------- */
@@ -520,7 +576,16 @@ img { max-width: 100%; display: block; }
    dropdown ends above the leaderboard rather than above the sidebar. */
 .home-controls { grid-column: 1; grid-row: 1; }
 .home-main { grid-column: 1; grid-row: 2; }
-.home-sidebar { grid-column: 2; grid-row: 2; position: sticky; top: 24px; }
+.home-sidebar {
+  grid-column: 2;
+  grid-row: 2;
+  position: sticky;
+  top: 24px;
+  /* Category and town pages stack a sponsor card above the events card. */
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 
 .sidebar-card {
   background: var(--bg);
@@ -566,7 +631,12 @@ img { max-width: 100%; display: block; }
 @media (max-width: 860px) {
   .home-layout { grid-template-columns: 1fr; }
   .home-controls, .home-main, .home-sidebar { grid-column: 1; grid-row: auto; }
-  .home-sidebar { position: static; }
+  /* display: contents dissolves the sidebar's own box so its cards become
+     direct children of the single-column grid - which lets the sponsor card
+     jump above the leaderboard (a paid spot shouldn't sit at the very bottom
+     of the page on a phone) while the events card stays below it. */
+  .home-sidebar { position: static; display: contents; }
+  .sponsor-card { order: -1; }
 }
 
 /* ---------------- Events calendar ---------------- */

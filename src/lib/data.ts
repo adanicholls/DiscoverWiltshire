@@ -60,10 +60,6 @@ export const DIRECT_CATEGORY_PAGES = Object.keys(CATEGORY_LABELS_CORE);
 // Core categories stay static since each has its own hand-built page, not
 // something addable via that admin UI.
 
-export const CATEGORY_SPONSORS: Record<string, string> = {
-  "eat-drink": "Kennet Valley Brewery",
-};
-
 // Wiltshire's major towns, for the town hub pages and the location
 // filter - a fixed list rather than a free-text field (towns don't need
 // to be admin-editable the way trade categories do). Businesses also

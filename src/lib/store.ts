@@ -125,6 +125,45 @@ function mapEventRow(row: EventRow): LiveEvent {
   };
 }
 
+export type SponsorTargetType = "category" | "town";
+
+export interface Sponsorship {
+  id: string;
+  targetType: SponsorTargetType;
+  targetId: string;
+  sponsorName: string;
+  headline: string;
+  website: string;
+  imageUrl: string;
+  photoColor: string;
+}
+
+export interface SponsorshipRow {
+  id: string;
+  target_type: SponsorTargetType;
+  target_id: string;
+  sponsor_name: string;
+  headline: string;
+  website: string;
+  image_url: string;
+  photo_color: string;
+}
+
+export const SPONSORSHIP_COLUMNS = "id, target_type, target_id, sponsor_name, headline, website, image_url, photo_color";
+
+export function mapSponsorshipRow(row: SponsorshipRow): Sponsorship {
+  return {
+    id: row.id,
+    targetType: row.target_type,
+    targetId: row.target_id,
+    sponsorName: row.sponsor_name,
+    headline: row.headline,
+    website: row.website,
+    imageUrl: row.image_url,
+    photoColor: row.photo_color,
+  };
+}
+
 async function attachVotes<T extends { id: string }>(
   rows: T[]
 ): Promise<(T & { liveVotes: number })[]> {
@@ -343,6 +382,23 @@ export const Store = {
       status: "pending",
     });
     if (error) throw error;
+  },
+
+  // The sponsor for one category or town page, or null if it's unsold. A
+  // failed lookup also returns null (logged): the sponsor slot is an extra
+  // on the page, and a hiccup there shouldn't take the whole page down.
+  async getSponsorship(targetType: SponsorTargetType, targetId: string): Promise<Sponsorship | null> {
+    const { data, error } = await supabase
+      .from("sponsorships")
+      .select(SPONSORSHIP_COLUMNS)
+      .eq("target_type", targetType)
+      .eq("target_id", targetId)
+      .maybeSingle();
+    if (error) {
+      console.error("Failed to load sponsorship:", error);
+      return null;
+    }
+    return data ? mapSponsorshipRow(data as SponsorshipRow) : null;
   },
 
   // Trade categories (e.g. "Painters", "Plumbers") are admin-editable via

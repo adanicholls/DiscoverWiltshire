@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TradeChips from "@/components/TradeChips";
 import Leaderboard from "@/components/Leaderboard";
+import PageSidebar from "@/components/PageSidebar";
 import { Store } from "@/lib/store";
 import { TOWN_LABELS } from "@/lib/data";
 
@@ -66,15 +67,21 @@ export default async function TradeCategoryPage({ params, searchParams }: PagePr
 
         <TradeChips activeSlug={slug} />
 
-        <div className="period-toggle">
-          <button className="active">Today</button>
-          <span>·</span>
-          <button>This week</button>
-          <span>·</span>
-          <button>This month</button>
-        </div>
+        <div className="home-layout home-layout--single-row">
+          <div className="home-main">
+            <div className="period-toggle">
+              <button className="active">Today</button>
+              <span>·</span>
+              <button>This week</button>
+              <span>·</span>
+              <button>This month</button>
+            </div>
 
-        <Leaderboard category={slug} town={town} />
+            <Leaderboard category={slug} town={town} />
+          </div>
+
+          <PageSidebar sponsor={{ type: "category", id: slug, label }} town={townLabel ? town : undefined} />
+        </div>
 
         <div className="cta-band">
           <h3>think your business belongs on this list?</h3>

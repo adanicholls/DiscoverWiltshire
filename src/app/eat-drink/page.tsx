@@ -3,7 +3,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CategoryTabs from "@/components/CategoryTabs";
 import Leaderboard from "@/components/Leaderboard";
-import { CATEGORY_SPONSORS, TOWN_LABELS } from "@/lib/data";
+import PageSidebar from "@/components/PageSidebar";
+import { CATEGORY_LABELS_CORE, TOWN_LABELS } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Eat & drink in Wiltshire, ranked — Discover Wiltshire",
@@ -13,20 +14,10 @@ export default async function EatDrinkPage({ searchParams }: PageProps<"/eat-dri
   const params = await searchParams;
   const town = typeof params.town === "string" ? params.town : undefined;
   const townLabel = town ? TOWN_LABELS[town] : undefined;
-  const sponsor = CATEGORY_SPONSORS["eat-drink"];
 
   return (
     <>
       <Header />
-
-      {sponsor && (
-        <div className="category-sponsor">
-          <div className="wrap" style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
-            <span>eat &amp; drink — in partnership with {sponsor}</span>
-            <span style={{ opacity: 0.6 }}>category sponsor</span>
-          </div>
-        </div>
-      )}
 
       <main className="wrap">
         <h1 className="page-title">Eat &amp; drink{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
@@ -36,15 +27,25 @@ export default async function EatDrinkPage({ searchParams }: PageProps<"/eat-dri
         </p>
 
         <CategoryTabs active="/eat-drink" />
-        <div className="period-toggle">
-          <button className="active">Today</button>
-          <span>·</span>
-          <button>This week</button>
-          <span>·</span>
-          <button>This month</button>
-        </div>
 
-        <Leaderboard category="eat-drink" town={town} />
+        <div className="home-layout home-layout--single-row">
+          <div className="home-main">
+            <div className="period-toggle">
+              <button className="active">Today</button>
+              <span>·</span>
+              <button>This week</button>
+              <span>·</span>
+              <button>This month</button>
+            </div>
+
+            <Leaderboard category="eat-drink" town={town} />
+          </div>
+
+          <PageSidebar
+            sponsor={{ type: "category", id: "eat-drink", label: CATEGORY_LABELS_CORE["eat-drink"] }}
+            town={townLabel ? town : undefined}
+          />
+        </div>
 
         <div className="cta-band">
           <h3>think your business belongs on this list?</h3>

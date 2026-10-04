@@ -3,7 +3,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CategoryTabs from "@/components/CategoryTabs";
 import Leaderboard from "@/components/Leaderboard";
-import { TOWN_LABELS } from "@/lib/data";
+import PageSidebar from "@/components/PageSidebar";
+import { CATEGORY_LABELS_CORE, TOWN_LABELS } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Shops in Wiltshire, ranked — Discover Wiltshire",
@@ -26,15 +27,25 @@ export default async function ShopsPage({ searchParams }: PageProps<"/shops">) {
         </p>
 
         <CategoryTabs active="/shops" />
-        <div className="period-toggle">
-          <button className="active">Today</button>
-          <span>·</span>
-          <button>This week</button>
-          <span>·</span>
-          <button>This month</button>
-        </div>
 
-        <Leaderboard category="shops" town={town} />
+        <div className="home-layout home-layout--single-row">
+          <div className="home-main">
+            <div className="period-toggle">
+              <button className="active">Today</button>
+              <span>·</span>
+              <button>This week</button>
+              <span>·</span>
+              <button>This month</button>
+            </div>
+
+            <Leaderboard category="shops" town={town} />
+          </div>
+
+          <PageSidebar
+            sponsor={{ type: "category", id: "shops", label: CATEGORY_LABELS_CORE.shops }}
+            town={townLabel ? town : undefined}
+          />
+        </div>
 
         <div className="cta-band">
           <h3>think your business belongs on this list?</h3>
