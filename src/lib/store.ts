@@ -303,15 +303,16 @@ export const Store = {
   },
 
   // Only approved, still-upcoming events, soonest first - same shape for
-  // the homepage strip (pass a small limit) and the full /whats-on
-  // calendar (no limit).
-  async getUpcomingEvents(limit?: number): Promise<LiveEvent[]> {
+  // the homepage strip (pass a small limit), the full /whats-on calendar
+  // (no limit), and a town hub's sidebar (pass that town's id).
+  async getUpcomingEvents(limit?: number, town?: string): Promise<LiveEvent[]> {
     let query = supabase
       .from("events")
       .select("id, name, description, starts_at, venue, town_id, website, price_text, photo_color")
       .eq("status", "approved")
       .gte("starts_at", new Date().toISOString())
       .order("starts_at", { ascending: true });
+    if (town) query = query.eq("town_id", town);
     if (limit) query = query.limit(limit);
 
     const { data, error } = await query;

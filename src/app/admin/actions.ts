@@ -157,6 +157,7 @@ export async function approveEvent(id: string) {
   if (error) throw error;
   revalidatePath("/admin");
   revalidatePath("/whats-on");
+  revalidatePath("/towns/[slug]", "page");
   revalidatePath("/");
 }
 
@@ -176,6 +177,7 @@ export async function deleteEvent(id: string) {
   revalidatePath("/admin");
   revalidatePath("/admin/events");
   revalidatePath("/whats-on");
+  revalidatePath("/towns/[slug]", "page");
   revalidatePath("/");
 }
 
@@ -198,6 +200,9 @@ export async function updateEvent(id: string, fields: EventEditFields) {
   if (error) throw error;
   revalidatePath("/admin/events");
   revalidatePath("/whats-on");
+  // The event's town (or status) may have just changed, so any town page
+  // could now be showing a stale list.
+  revalidatePath("/towns/[slug]", "page");
   revalidatePath("/");
 }
 

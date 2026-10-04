@@ -7,13 +7,15 @@ import { formatEventDate, groupEventsByMonth } from "@/lib/eventDate";
  * block, the event's details, and a ticket/details link if one was given -
  * the same shape as Live Nation's event calendar, in this site's own
  * design language. */
-export default async function EventCalendar() {
-  const events = await Store.getUpcomingEvents();
+export default async function EventCalendar({ town }: { town?: string }) {
+  const events = await Store.getUpcomingEvents(undefined, town);
+  const townLabel = town ? TOWN_LABELS[town] : undefined;
 
   if (events.length === 0) {
     return (
       <div className="card" style={{ textAlign: "center", opacity: 0.6, fontSize: 13 }}>
-        Nothing on the calendar right now — be the first to add one.
+        {townLabel ? `Nothing on near ${townLabel} right now` : "Nothing on the calendar right now"} — be the first to
+        add one.
       </div>
     );
   }

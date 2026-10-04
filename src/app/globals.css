@@ -528,6 +528,15 @@ img { max-width: 100%; display: block; }
 .event-side-row:hover { background: var(--surface-muted); }
 .sidebar-card-header a:hover { opacity: 1; }
 
+/* Town hubs have no controls row above the list, so there the main column
+   and the sidebar share the first (only) row. Desktop-only: below the
+   breakpoint everything stacks via the rules that follow. */
+@media (min-width: 861px) {
+  .home-layout--single-row { grid-template-rows: auto; }
+  .home-layout--single-row > .home-main,
+  .home-layout--single-row > .home-sidebar { grid-row: 1; }
+}
+
 @media (max-width: 860px) {
   .home-layout { grid-template-columns: 1fr; }
   .home-controls, .home-main, .home-sidebar { grid-column: 1; grid-row: auto; }

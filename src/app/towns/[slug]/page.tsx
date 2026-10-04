@@ -3,8 +3,16 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Leaderboard from "@/components/Leaderboard";
+import EventsList from "@/components/EventsList";
 import { TOWNS, TOWN_LABELS, DIRECT_CATEGORY_PAGES } from "@/lib/data";
 import { Store } from "@/lib/store";
+
+// The ranked sections load client-side, but the events sidebar is rendered
+// on the server - so without this the page would freeze whatever events
+// existed at build time (including ones that have since passed). Five
+// minutes bounds that for time-based changes; the event admin actions also
+// revalidate this route on demand so an approval appears immediately.
+export const revalidate = 300;
 
 // One generic page serves every town via /towns/<slug>, same pattern as
 // /trades/[slug] - see TOWNS in lib/data.ts to add more.
@@ -60,27 +68,44 @@ export default async function TownPage({ params }: PageProps<"/towns/[slug]">) {
           Every pub, stay, activity, shop, and local trade near {label}, ranked by the people who actually use them.
         </p>
 
-        {DIRECT_CATEGORY_PAGES.map((catId) => (
-          <section key={catId} style={{ marginBottom: 8 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
-              <h2 className="section-heading">{CORE_SECTION_HEADINGS[catId](label)}</h2>
-              <Link href={`/${catId}?town=${slug}`} style={{ fontSize: 12, opacity: 0.65, whiteSpace: "nowrap" }}>
-                See all →
-              </Link>
-            </div>
-            <Leaderboard category={catId} town={slug} limit={5} />
-          </section>
-        ))}
+        {/* Same two-column shape as the homepage: the ranked sections on the
+            left, this town's upcoming events in a sidebar on the right
+            (stacking below on narrow screens). */}
+        <div className="home-layout home-layout--single-row">
+          <div className="home-main">
+            {DIRECT_CATEGORY_PAGES.map((catId) => (
+              <section key={catId} style={{ marginBottom: 8 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
+                  <h2 className="section-heading">{CORE_SECTION_HEADINGS[catId](label)}</h2>
+                  <Link href={`/${catId}?town=${slug}`} style={{ fontSize: 12, opacity: 0.65, whiteSpace: "nowrap" }}>
+                    See all →
+                  </Link>
+                </div>
+                <Leaderboard category={catId} town={slug} limit={5} />
+              </section>
+            ))}
 
-        <section style={{ marginBottom: 8 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
-            <h2 className="section-heading">Top-rated trades &amp; services in {label}</h2>
-            <Link href={`/trades?town=${slug}`} style={{ fontSize: 12, opacity: 0.65, whiteSpace: "nowrap" }}>
-              See all →
-            </Link>
+            <section style={{ marginBottom: 8 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>
+                <h2 className="section-heading">Top-rated trades &amp; services in {label}</h2>
+                <Link href={`/trades?town=${slug}`} style={{ fontSize: 12, opacity: 0.65, whiteSpace: "nowrap" }}>
+                  See all →
+                </Link>
+              </div>
+              <Leaderboard categories={tradeCategories.map((c) => c.id)} town={slug} limit={5} showCategoryTag />
+            </section>
           </div>
-          <Leaderboard categories={tradeCategories.map((c) => c.id)} town={slug} limit={5} showCategoryTag />
-        </section>
+
+          <aside className="home-sidebar">
+            <div className="sidebar-card">
+              <div className="sidebar-card-header">
+                <h2 className="section-heading">what&apos;s on in {label}</h2>
+                <Link href={`/whats-on?town=${slug}`}>See all →</Link>
+              </div>
+              <EventsList limit={3} town={slug} />
+            </div>
+          </aside>
+        </div>
 
         <div className="cta-band">
           <h3>think your business belongs on this list?</h3>
