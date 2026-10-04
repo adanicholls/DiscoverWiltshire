@@ -204,7 +204,18 @@ img { max-width: 100%; display: block; }
 
 .mega-menu[hidden] { display: none; }
 
-.mega-item { padding: 8px 0; cursor: pointer; }
+/* Menu entries get the same grey hover highlight as list rows elsewhere on
+   the site. The negative margin cancels the extra horizontal padding, so
+   the text stays aligned with the column while the highlight reaches
+   slightly past it. */
+.mega-item {
+  padding: 8px 10px;
+  margin: 0 -10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.mega-item:hover { background: var(--surface-muted); }
 .mega-item-title { font-size: 13px; font-weight: 500; }
 .mega-item-desc { font-size: 12px; opacity: 0.6; margin-top: 2px; }
 
@@ -234,9 +245,19 @@ img { max-width: 100%; display: block; }
   gap: 6px 20px;
   max-height: 220px;
   overflow-y: auto;
+  /* Shifted left by the links' horizontal padding so their text still lines
+     up with the heading, without the grid's overflow clipping the highlight. */
+  margin-left: -8px;
 }
-.mega-trades-link { font-size: 13px; padding: 4px 0; opacity: 0.8; cursor: pointer; }
-.mega-trades-link:hover { opacity: 1; color: var(--terracotta); }
+.mega-trades-link {
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  opacity: 0.8;
+  cursor: pointer;
+  transition: background 0.15s ease, opacity 0.15s ease;
+}
+.mega-trades-link:hover { opacity: 1; background: var(--surface-muted); }
 .mega-trades-all {
   display: inline-block;
   margin-top: 12px;
