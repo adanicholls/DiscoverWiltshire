@@ -38,6 +38,9 @@ npm run dev
 | `/admin/categories`, `/admin/events`, `/admin/sponsors` | Manage trade categories, the events calendar, and the sponsor shown on each category/town page (image upload goes to the public `sponsor-images` Storage bucket) |
 | `/admin/journal`, `/admin/journal/new`, `/admin/journal/[id]/edit` | Write and manage Journal entries: Markdown editor with toolbar, live preview and inline image upload (to the public `journal-images` bucket), drafts, and scheduling by setting a future publish date |
 | `/journal`, `/journal/[slug]` | The Journal (formerly "Our story" at `/about`, which redirects here). The index is a filterable card grid with "Load more"; an **article** has its own page (sticky title column beside the article, share buttons, related entries), a **news** card links out to another site. `/journal?category=…` and `?type=news` are shareable filtered views |
+| `/signup`, `/login`, `/account`, `/members/[name]` | Members: create an account (display name, email, password, email confirmation), sign in, an account page (edit your bio, see and delete your own reviews with their approval status) and a public profile listing a member's approved reviews. The header shows "Sign in" or the member's initials. See "Members and reviews" below for the one-off setup |
+| `/terms`, `/privacy` | **Draft** terms of use and privacy notice written to match how the site works — they need a legal check and a contact email adding before launch |
+| `/admin/reviews`, `/admin/members` | Approve or decline new reviews, handle reports on live reviews, and ban/unban members from posting |
 | `/whats-on`, `/whats-on/add` | The events calendar and its public submission form (events are approved in `/admin`) |
 
 ## Data model
@@ -53,6 +56,20 @@ Everything lives in Supabase — see `supabase/migrations/` for the full schema 
 - **`testimonials`**, **`events`** — smaller supporting tables.
 
 `src/lib/store.ts` is the single place that talks to Supabase for the public site (reads, votes, submissions) — same function shapes throughout, so components don't need to know it's a network call. The admin area uses its own service-role client (`src/lib/supabase-admin.ts`) since it needs to bypass RLS.
+
+## Members and reviews
+
+Members use Supabase Auth (the same system as the admin login; admin access is still decided only by `ADMIN_EMAIL`). Reviews are star-rated, written by signed-in members, and **held as pending until approved in `/admin/reviews`** — the database only ever shows the public approved ones. Members can report a live review; reports appear in the same admin screen. Until the migration below has been run the site still works: review sections just show "No reviews yet" and the account/admin pages explain what's missing.
+
+One-off setup:
+
+1. Run `supabase/migrations/0007_members_reviews.sql` in the Supabase SQL Editor. It adds `profiles` (created automatically at sign-up, and backfilled for existing accounts), `reviews`, the `business_review_stats` view and `content_reports`, all with row-level security.
+2. Supabase → Authentication → **Providers → Email**: keep **Confirm email** switched on.
+3. Supabase → Authentication → **URL Configuration**: set the Site URL to the live address and add `https://<your-domain>/auth/callback` to Redirect URLs (add `http://localhost:3000/auth/callback` for local testing). The confirmation email lands there.
+4. Supabase's built-in email sender is limited to a few emails an hour. Before real sign-ups, add a proper sender under Authentication → **SMTP Settings** (Resend or Postmark on your own domain).
+5. Fill in the contact details marked `[Add …]` in `/terms` and `/privacy` and have both checked by someone qualified.
+
+Rules worth knowing: one review per member per business; a member can write at most 5 reviews a day (enforced by a database trigger); display names are unique and can't be changed by the member; deleting a review (or an auth user) removes it straight away.
 
 ## Design system
 
