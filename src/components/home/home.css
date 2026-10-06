@@ -415,7 +415,7 @@ a.ph-thread:hover .ph-thread-title { color: var(--ph-link); text-decoration: und
 .ph-feed-header,
 .ph-row {
   display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) 256px 80px 80px;
+  grid-template-columns: 56px minmax(0, 1fr) 256px 80px;
   align-items: center;
   column-gap: 12px;
 }
@@ -498,7 +498,6 @@ a.ph-thread:hover .ph-thread-title { color: var(--ph-link); text-decoration: und
 }
 .ph-chip:hover { background: rgba(255, 255, 255, 0.08); }
 
-.ph-price { font-size: 12px; color: var(--ph-text-3); }
 .ph-col-score { text-align: center; }
 
 .ph-vote {
@@ -617,7 +616,7 @@ a.ph-thread:hover .ph-thread-title { color: var(--ph-link); text-decoration: und
 @media (max-width: 1099px) {
   .ph-main { padding: 40px; }
   .ph-feed-header,
-  .ph-row { grid-template-columns: 40px minmax(0, 1fr) 200px 64px 72px; }
+  .ph-row { grid-template-columns: 40px minmax(0, 1fr) 200px 72px; }
   .ph-hero-inner { padding: 36px; }
   .ph-hero-title { font-size: 34px; }
 }
@@ -633,7 +632,7 @@ a.ph-thread:hover .ph-thread-title { color: var(--ph-link); text-decoration: und
   .ph-header-actions { margin-left: 0; }
   .ph-feed-header,
   .ph-row { grid-template-columns: 28px minmax(0, 1fr) auto; }
-  .ph-col-topics, .ph-col-price { display: none; }
+  .ph-col-topics { display: none; }
   .ph-feed-header .ph-col-score { text-align: right; }
   .ph-rank { padding-left: 8px; }
   .ph-footer { grid-template-columns: 1fr 1fr; }

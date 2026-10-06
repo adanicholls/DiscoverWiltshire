@@ -142,7 +142,6 @@ export default function HomeFeed({ town }: { town?: string }) {
               <span />
               <span>Name</span>
               <span className="ph-col-topics">Topics</span>
-              <span className="ph-col-price">Price</span>
               <span className="ph-col-score">Score</span>
             </div>
           )}
@@ -181,7 +180,6 @@ export default function HomeFeed({ town }: { town?: string }) {
                         </Link>
                       )}
                     </span>
-                    <span className="ph-col-price ph-price">{b.priceRange}</span>
                     <button
                       type="button"
                       className={"ph-vote" + (voted ? " voted" : "")}
