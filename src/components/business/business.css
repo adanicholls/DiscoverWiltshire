@@ -81,8 +81,6 @@
 .bp2-review-name { font-size: 14px; font-weight: 500; }
 .bp2-review-quote { margin: 4px 0 0; font-size: 14px; line-height: 1.6; color: var(--ink-muted); }
 
-.bp2-main .cta-band { margin-top: 40px; }
-
 /* ---------- sidebar ---------- */
 
 .bp2-side { position: sticky; top: calc(var(--ph-header, 72px) + 20px); display: flex; flex-direction: column; gap: 16px; }

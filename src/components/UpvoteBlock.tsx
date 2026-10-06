@@ -11,9 +11,9 @@ interface VoteState {
 
 const VoteContext = createContext<VoteState | null>(null);
 
-/** Wraps a business profile page so its two upvote buttons (one near the
- * name, one in the bottom CTA band) share one vote count and one
- * already-voted flag, even with server-rendered content between them. */
+/** Wraps a business profile page so every upvote control on it (the action
+ * button and the counts) shares one vote total and one already-voted flag,
+ * even with server-rendered content between them. */
 export function VoteProvider({
   businessId,
   initialVotes,
@@ -69,15 +69,6 @@ export function UpvoteActionButton() {
     <button type="button" className="btn btn-primary" disabled={voted} onClick={vote}>
       <span aria-hidden="true">▲</span>
       {voted ? "Upvoted" : "Upvote"} · {votes}
-    </button>
-  );
-}
-
-export function UpvoteCtaButton() {
-  const { voted, vote } = useVote();
-  return (
-    <button className="btn btn-primary" disabled={voted} onClick={vote} style={{ border: "none" }}>
-      Upvote
     </button>
   );
 }

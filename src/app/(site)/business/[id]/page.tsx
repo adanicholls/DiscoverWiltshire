@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import ShareButton from "@/components/business/ShareButton";
 import SidebarEvents from "@/components/SidebarEvents";
-import { VoteProvider, VoteCount, UpvoteActionButton, UpvoteCtaButton } from "@/components/UpvoteBlock";
+import { VoteProvider, VoteCount, UpvoteActionButton } from "@/components/UpvoteBlock";
 import { DirectionsIcon, GlobeIcon, PhoneIcon } from "@/components/home/icons";
 import { DIRECT_CATEGORY_PAGES, TOWN_LABELS } from "@/lib/data";
 import { Store } from "@/lib/store";
@@ -187,11 +187,6 @@ export default async function BusinessPage({ params }: PageProps<"/business/[id]
               </div>
             </section>
           )}
-
-          <div className="cta-band">
-            <h3>think {business.name} deserves to climb higher?</h3>
-            <UpvoteCtaButton />
-          </div>
         </div>
 
         <aside className="bp2-side">
