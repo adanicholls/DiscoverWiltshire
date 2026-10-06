@@ -79,9 +79,13 @@ export default function PricingPage() {
           gap: 12px;
           margin: 20px 0 8px;
         }
+        /* Colours follow the site shell: near-black tiles with hairline
+           borders, the coral -> magenta -> violet gradient from the homepage
+           hero on the free tier, and the sidebar's blue for founding members. */
         .pricing-bento__tile {
-          background: var(--surface);
+          background: #1a1a1c;
           border: 1px solid var(--border);
+          transition: border-color 0.15s ease;
           border-radius: var(--radius-lg);
           padding: 18px 20px;
           display: flex;
@@ -91,7 +95,7 @@ export default function PricingPage() {
         }
         .pricing-bento__hero {
           grid-area: hero;
-          background: linear-gradient(135deg, var(--terracotta) 0%, #96391f 100%);
+          background: linear-gradient(120deg, #ff6154 0%, #d946ef 58%, #7c5cff 100%);
           border: 0;
           color: #fff;
           position: relative;
@@ -130,7 +134,7 @@ export default function PricingPage() {
         .pricing-bento__hero p { opacity: 0.92; }
         .pricing-bento__cta {
           align-self: flex-start; display: inline-block; padding: 9px 16px; border-radius: 8px;
-          text-decoration: none; font-size: 13px; font-weight: 500; background: #fff; color: var(--terracotta);
+          text-decoration: none; font-size: 13px; font-weight: 500; background: #fff; color: #131314;
         }
         .pricing-bento__cta:hover { background: rgba(255,255,255,0.85); }
         .pricing-bento__cta-sm {
@@ -143,11 +147,19 @@ export default function PricingPage() {
         .pricing-bento__town { grid-area: town; }
         /* A slim full-width strip along the bottom rather than a square tile. */
         .pricing-bento__stat { grid-area: stat; flex-direction: row; align-items: center; justify-content: flex-start; gap: 14px; min-height: 0; }
-        .pricing-bento__stat-num { font-family: var(--font-voice); font-size: clamp(28px, 4vw, 40px); color: var(--terracotta); }
+        .pricing-bento__stat-num {
+          font-family: var(--font-voice);
+          font-size: clamp(28px, 4vw, 40px);
+          background: linear-gradient(90deg, #8ab4f8, #d946ef 55%, #ff6154);
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+        }
         .pricing-bento__stat-lbl { font-size: 12px; opacity: 0.7; line-height: 1.4; }
-        .pricing-bento__founding { grid-area: founding; background: var(--ink); color: var(--bg); border: 0; }
-        .pricing-bento__founding .pricing-bento__cta-sm { color: var(--bg); border-color: rgba(244,238,224,0.5); }
-        .pricing-bento__founding .pricing-bento__cta-sm:hover { background: rgba(244,238,224,0.12); }
+        .pricing-bento__founding { grid-area: founding; background: #004a77; color: #c2e7ff; border: 0; }
+        .pricing-bento__founding .pricing-bento__cta-sm { color: #c2e7ff; border-color: rgba(194,231,255,0.5); }
+        .pricing-bento__founding .pricing-bento__cta-sm:hover { background: rgba(194,231,255,0.12); }
+        .pricing-bento__tile:not(.pricing-bento__hero):not(.pricing-bento__founding):hover { border-color: #444746; }
 
         @media (max-width: 480px) {
           .pricing-bento { grid-template-columns: 1fr; grid-template-areas: "hero" "promoted" "sponsor" "town" "founding" "stat"; }
