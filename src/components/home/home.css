@@ -25,6 +25,17 @@ body:has(.ph-home) {
   --ph-aside: 320px;
   --ph-header: 72px;
 
+  /* Re-point the site's own colour tokens at the dark palette, so every
+     shared component (cards, tabs, buttons, forms, journal...) inside the
+     shell follows without needing its own dark variant. */
+  --bg: #131314;
+  --surface: #131314;
+  --surface-muted: #232527;
+  --ink: #e3e3e3;
+  --ink-muted: #9aa0a6;
+  --border: #2d2f31;
+  --terracotta-wash: rgba(255, 97, 84, 0.16);
+
   min-height: 100vh;
   background: var(--ph-page);
   color: var(--ph-text);
@@ -138,6 +149,14 @@ body:has(.ph-home) {
   column-gap: 28px;
   padding: calc(var(--ph-header) + 20px) 32px 0 0;
 }
+
+/* Pages inside the panel keep their own max-width (narrow forms, article
+   columns) but the panel already provides the side padding. */
+.ph-main .wrap { padding-left: 0; padding-right: 0; }
+
+/* The site's call-to-action band is an inverted block (ink background);
+   inside the dark panel it would turn light grey, so it gets a dark card. */
+.ph-main .cta-band { background: var(--ph-field); border: 1px solid var(--ph-outline); color: var(--ph-text); }
 
 .ph-aside { flex: 0 0 var(--ph-aside); width: var(--ph-aside); min-width: 0; }
 
