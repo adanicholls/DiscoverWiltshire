@@ -154,12 +154,62 @@ body:has(.ph-home) {
    columns) but the panel already provides the side padding. */
 .ph-main .wrap { padding-left: 0; padding-right: 0; }
 
+/* ---------- buttons & calls to action ----------
+   One treatment site-wide inside the shell, the same as the pricing page's
+   free tier: primary actions get the coral -> magenta -> violet gradient
+   with white text, secondary ones are dark with a hairline outline, and
+   call-to-action bands are the gradient with a white button. */
+
+.ph-home {
+  --ph-gradient: linear-gradient(120deg, #ff6154 0%, #d946ef 58%, #7c5cff 100%);
+}
+
+.ph-home .btn-primary,
+.ph-home .ph-pill-coral,
+.ph-home .ph-btn-blue {
+  background: var(--ph-gradient);
+  color: #fff;
+  border-color: transparent;
+}
+.ph-home .btn-primary:hover:not(:disabled),
+.ph-home .ph-pill-coral:hover,
+.ph-home .ph-btn-blue:hover { background: var(--ph-gradient); filter: brightness(1.1); }
+.ph-home .ph-btn-blue kbd { background: rgba(255, 255, 255, 0.22); }
+
+.ph-home .btn-secondary {
+  background: transparent;
+  color: var(--ph-text);
+  border: 1px solid var(--ph-outline);
+}
+.ph-home .btn-secondary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.08); }
+
+.ph-home .btn-dark { background: #fff; color: #131314; }
+.ph-home .btn-dark:hover:not(:disabled) { background: rgba(255, 255, 255, 0.85); }
+
+.ph-main .cta-band {
+  position: relative;
+  overflow: hidden;
+  background: var(--ph-gradient);
+  border: 0;
+  color: #fff;
+}
+.ph-main .cta-band::after {
+  content: "";
+  position: absolute;
+  right: -50px;
+  bottom: -60px;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18), transparent 70%);
+  pointer-events: none;
+}
+.ph-main .cta-band p { opacity: 0.92; }
+.ph-main .cta-band .btn-primary { background: #fff; color: #131314; position: relative; z-index: 1; }
+.ph-main .cta-band .btn-primary:hover { background: rgba(255, 255, 255, 0.88); filter: none; }
+
 /* The right-hand sponsor/events column sticks below the fixed top bar. */
 .ph-main .home-sidebar { top: calc(var(--ph-header) + 20px); }
-
-/* The site's call-to-action band is an inverted block (ink background);
-   inside the dark panel it would turn light grey, so it gets a dark card. */
-.ph-main .cta-band { background: var(--ph-field); border: 1px solid var(--ph-outline); color: var(--ph-text); }
 
 .ph-aside { flex: 0 0 var(--ph-aside); width: var(--ph-aside); min-width: 0; }
 

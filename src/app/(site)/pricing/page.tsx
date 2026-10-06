@@ -22,8 +22,23 @@ export default function PricingPage() {
            keyboard support, and find-in-page all come from the browser,
            no JS or ARIA needed. Colours/type pull from this site's own
            tokens instead of the reference demo's blue theme. */
-        .faq-accordion__item { border-top: 1px solid var(--border); }
-        .faq-accordion__item:last-child { border-bottom: 1px solid var(--border); }
+        /* Each question is its own dark card like the pricing tiles; the open
+           one gets the coral -> magenta -> violet gradient as its outline. */
+        .faq-accordion { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
+        .faq-accordion__item {
+          background: #1a1a1c;
+          border: 1px solid var(--border);
+          border-radius: var(--radius-lg);
+          padding: 0 20px;
+          transition: border-color 0.15s ease;
+        }
+        .faq-accordion__item:hover { border-color: #444746; }
+        .faq-accordion__item[open] {
+          border-color: transparent;
+          background:
+            linear-gradient(#1a1a1c, #1a1a1c) padding-box,
+            linear-gradient(120deg, #ff6154 0%, #d946ef 58%, #7c5cff 100%) border-box;
+        }
         .faq-accordion__q {
           list-style: none;
           cursor: pointer;
@@ -36,7 +51,7 @@ export default function PricingPage() {
         }
         .faq-accordion__q::-webkit-details-marker { display: none; }
         .faq-accordion__q::marker { content: ""; }
-        .faq-accordion__q:hover { color: var(--terracotta); }
+        .faq-accordion__q:hover { color: #fff; }
         .faq-accordion__q::after {
           content: "";
           position: absolute;
@@ -51,7 +66,8 @@ export default function PricingPage() {
           opacity: 0.55;
         }
         .faq-accordion__item[open] > .faq-accordion__q::after { transform: translateY(-30%) rotate(225deg); }
-        .faq-accordion__item[open] > .faq-accordion__q { color: var(--terracotta); }
+        .faq-accordion__item[open] > .faq-accordion__q { color: #fff; }
+        .faq-accordion__item[open] > .faq-accordion__q::after { opacity: 1; color: #ff6154; }
         .faq-accordion__a { padding: 0 20px 18px 0; font-size: 13.5px; line-height: 1.6; color: var(--ink-muted); }
         .faq-accordion__item[open] .faq-accordion__a { animation: faq-accordion-in 0.3s cubic-bezier(0.2, 0.7, 0.3, 1); }
         @keyframes faq-accordion-in {
