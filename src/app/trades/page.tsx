@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import TradeChips from "@/components/TradeChips";
+import TradeCards from "@/components/TradeCards";
 import Leaderboard from "@/components/Leaderboard";
 import { Store } from "@/lib/store";
 import { TOWN_LABELS } from "@/lib/data";
@@ -30,16 +30,9 @@ export default async function TradesPage({ searchParams }: PageProps<"/trades">)
           ranked by the people who&apos;ve actually hired them.
         </p>
 
-        <TradeChips />
+        <TradeCards categories={tradeCategories} town={town} />
 
-        <div className="period-toggle">
-          <button className="active">Today</button>
-          <span>·</span>
-          <button>This week</button>
-          <span>·</span>
-          <button>This month</button>
-        </div>
-
+        <h2 className="section-heading">Top trades &amp; services{townLabel ? ` near ${townLabel}` : ""}</h2>
         <Leaderboard categories={tradeCategories.map((c) => c.id)} town={town} showCategoryTag />
 
         <div className="cta-band">
