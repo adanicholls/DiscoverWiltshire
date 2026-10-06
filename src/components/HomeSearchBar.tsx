@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { TOWNS } from "@/lib/data";
-import { splitTradeAndTown } from "@/lib/searchParse";
+import { searchHref } from "@/lib/searchHref";
 
 interface Props {
   /** Prefills the fields when this bar is reused on /search to refine a query. */
@@ -23,25 +23,8 @@ export default function HomeSearchBar({ initialQuery = "", initialTown = "" }: P
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    let tradeText = trade.trim();
-    let townId = town;
-
-    if (!townId && tradeText) {
-      const parsed = splitTradeAndTown(tradeText);
-      tradeText = parsed.trade;
-      townId = parsed.townId;
-    }
-
-    if (!tradeText) {
-      // Town picked with nothing else typed - that's town-based browsing,
-      // not a search, so it goes straight to that town's hub page.
-      if (townId) router.push(`/towns/${townId}`);
-      return;
-    }
-
-    const qs = new URLSearchParams({ q: tradeText });
-    if (townId) qs.set("town", townId);
-    router.push(`/search?${qs.toString()}`);
+    const href = searchHref(trade, town);
+    if (href) router.push(href);
   }
 
   return (

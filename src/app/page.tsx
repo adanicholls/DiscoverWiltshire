@@ -1,67 +1,46 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import Leaderboard from "@/components/Leaderboard";
-import CategoryTabs from "@/components/CategoryTabs";
-import LocationFilter from "@/components/LocationFilter";
-import SidebarEvents from "@/components/SidebarEvents";
-import HomeSearchBar from "@/components/HomeSearchBar";
+import type { Metadata } from "next";
+import HomeHeader from "@/components/home/HomeHeader";
+import HomeSidebar from "@/components/home/HomeSidebar";
+import HeroBanner from "@/components/home/HeroBanner";
+import HomeFeed from "@/components/home/HomeFeed";
+import HomeFooter from "@/components/home/HomeFooter";
+import { Store, type LiveEvent } from "@/lib/store";
+import type { JournalSummary } from "@/lib/journal";
+import "@/components/home/home.css";
 
+export const metadata: Metadata = {
+  title: "Discover Wiltshire — the county's favourites, ranked by the people who live here",
+};
+
+// The homepage has its own shell, modelled on producthunt.com's: a fixed top
+// bar, a left sidebar of links with "Trending" (the Journal) and "Upcoming
+// events" beneath, and the ranked feed in a rounded panel. Every other page
+// keeps the standard top navigation.
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
   const town = typeof params.town === "string" ? params.town : undefined;
 
+  // Sidebar extras are nice-to-have: a failed lookup leaves that block
+  // empty rather than taking the homepage down.
+  let events: LiveEvent[] = [];
+  try {
+    events = await Store.getUpcomingEvents(3);
+  } catch (err) {
+    console.error("Failed to load events:", err);
+  }
+  const journal: JournalSummary[] = await Store.getJournalEntries(4);
+
   return (
-    <>
-      <Header />
-
-      <main className="wrap">
-        <div className="masthead">
-          <div className="masthead-brand">
-            <h1 className="masthead-tagline">the friend who knows Wiltshire best</h1>
-          </div>
-        </div>
-
-        {/* The "I need X, near me, now" fast lane - separate from the
-            leaderboard below, not a replacement for it. Routes to a
-            filtered results page rather than changing what's shown here. */}
-        <HomeSearchBar />
-
-        <CategoryTabs active="/" />
-
-        <div className="home-layout">
-          <div className="home-controls" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-            <div className="period-toggle" style={{ paddingBottom: 0 }}>
-              <button className="active">Today</button>
-              <span>·</span>
-              <button>This week</button>
-              <span>·</span>
-              <button>This month</button>
-            </div>
-            <LocationFilter />
-          </div>
-
-          <div className="home-main">
-            <Leaderboard showCategoryTag limit={8} town={town} />
-            <p className="placeholder-note">
-              The time toggle above (Today / This week / This month) is still just visual — votes now carry real
-              timestamps in the database, so filtering by period is just a query away, not yet wired up to these
-              buttons.
-            </p>
-          </div>
-
-          <aside className="home-sidebar">
-            <SidebarEvents />
-          </aside>
-        </div>
-
-        <div className="cta-band">
-          <h3>own a business in Wiltshire?</h3>
-          <p>get discovered by the people already looking for you</p>
-          <a className="btn btn-primary" href="/list-your-business">List your business</a>
-        </div>
-      </main>
-
-      <Footer />
-    </>
+    <div className="ph-home">
+      <HomeHeader />
+      <div className="ph-body">
+        <HomeSidebar journal={journal} events={events} />
+        <main className="ph-main">
+          <HeroBanner />
+          <HomeFeed town={town} />
+        </main>
+      </div>
+      <HomeFooter />
+    </div>
   );
 }

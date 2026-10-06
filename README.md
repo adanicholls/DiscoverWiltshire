@@ -27,7 +27,7 @@ npm run dev
 
 | Route | What it is |
 |---|---|
-| `/` | Homepage — the master leaderboard across all categories, with search and a town filter |
+| `/` | Homepage — modelled on producthunt.com's: fixed top bar with a Ctrl+K search dialog, a left sidebar of page links (plus the latest Journal entries and upcoming events), and a dark rounded panel holding a hero search card and ranked "Top in Wiltshire" / per-category tables with working upvotes. It has its own shell (`src/components/home/`, styles in `home.css`); every other page keeps the standard top navigation. `/?town=<id>` still filters the rankings to one town |
 | `/eat-drink`, `/stay`, `/things-to-do`, `/shops` | The four core category pages — each with a sponsor card and upcoming events in a right-hand column |
 | `/trades`, `/trades/[slug]` | Trades & services hub, plus one generic page for each of 30 trade categories — see `TRADE_CATEGORIES` in `src/lib/data.ts` to add more |
 | `/towns`, `/towns/[slug]` | A directory of Wiltshire's major towns, plus one generic page per town mixing every category — see `TOWNS` in `src/lib/data.ts` |
