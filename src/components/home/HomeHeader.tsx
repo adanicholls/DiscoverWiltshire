@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { TOWNS } from "@/lib/data";
+import { createSupabaseBrowserClient } from "@/lib/supabase-browser";
+import { initials } from "@/lib/members";
 import { searchHref } from "@/lib/searchHref";
 import HomeNavLinks from "./HomeNavLinks";
 import { CloseIcon, MegaphoneIcon, MenuIcon, PlusIcon, SearchIcon } from "./icons";
@@ -19,6 +21,18 @@ export default function HomeHeader() {
   const [trade, setTrade] = useState("");
   const [town, setTown] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  // Who is signed in, if anyone. Read in the browser (not on the server) so the
+  // public pages stay statically built and cacheable.
+  const [memberName, setMemberName] = useState<string | null>(null);
+
+  useEffect(() => {
+    const supabase = createSupabaseBrowserClient();
+    const nameOf = (user: { email?: string; user_metadata?: Record<string, unknown> } | null | undefined) =>
+      user ? ((user.user_metadata?.display_name as string | undefined) || user.email?.split("@")[0] || "Member") : null;
+    supabase.auth.getUser().then(({ data }) => setMemberName(nameOf(data.user)));
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => setMemberName(nameOf(session?.user)));
+    return () => sub.subscription.unsubscribe();
+  }, []);
 
   // Ctrl/Cmd + K opens search from anywhere on the page, Escape closes
   // whichever overlay is open.
@@ -91,6 +105,18 @@ export default function HomeHeader() {
         </button>
 
         <div className="ph-header-actions">
+          {memberName ? (
+            <Link href="/account" className="ph-member-link" title="Your account">
+              <span className="ph-member-avatar" aria-hidden="true">
+                {initials(memberName)}
+              </span>
+              <span className="ph-member-name">{memberName}</span>
+            </Link>
+          ) : (
+            <Link href="/login" className="ph-signin-link">
+              Sign in
+            </Link>
+          )}
           <Link href="/pricing" className="ph-pill ph-pill-outline">
             <MegaphoneIcon size={18} />
             <span className="ph-pill-label">Advertise</span>
@@ -108,6 +134,9 @@ export default function HomeHeader() {
           <div className="ph-backdrop" onClick={() => setMenuOpen(false)} />
           <div className="ph-drawer" role="dialog" aria-label="Menu">
             <HomeNavLinks onNavigate={() => setMenuOpen(false)} />
+            <Link href={memberName ? "/account" : "/login"} className="ph-drawer-account" onClick={() => setMenuOpen(false)}>
+              {memberName ? `Your account (${memberName})` : "Sign in"}
+            </Link>
           </div>
         </div>
       )}

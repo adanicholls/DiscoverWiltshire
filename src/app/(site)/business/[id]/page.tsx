@@ -1,29 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import ShareButton from "@/components/business/ShareButton";
+import ReportReviewButton from "@/components/members/ReportReviewButton";
+import ReviewComposer from "@/components/members/ReviewComposer";
+import Stars from "@/components/members/Stars";
 import SidebarEvents from "@/components/SidebarEvents";
 import { VoteProvider, VoteCount, UpvoteActionButton } from "@/components/UpvoteBlock";
 import { DirectionsIcon, GlobeIcon, PhoneIcon } from "@/components/home/icons";
 import { DIRECT_CATEGORY_PAGES, TOWN_LABELS } from "@/lib/data";
 import { Store } from "@/lib/store";
 import { shade } from "@/lib/color";
+import { formatReviewDate, initials, memberHref } from "@/lib/members";
 import "@/components/business/business.css";
+import "@/components/members/members.css";
 
 export async function generateMetadata({ params }: PageProps<"/business/[id]">): Promise<Metadata> {
   const { id } = await params;
   const business = await Store.getBusinessById(id);
   return { title: business ? `${business.name} — Discover Wiltshire` : "Business — Discover Wiltshire" };
-}
-
-function initials(name: string): string {
-  return (
-    name
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((w) => w[0]!.toUpperCase())
-      .join("") || "?"
-  );
 }
 
 /** "https://www.example.co.uk/menu" -> "example.co.uk"; null for the "#"
@@ -56,9 +50,11 @@ export default async function BusinessPage({ params }: PageProps<"/business/[id]
   const categoryHref = DIRECT_CATEGORY_PAGES.includes(business.category)
     ? `/${business.category}`
     : `/trades/${business.category}`;
-  const [categoryLabels, sameCategory] = await Promise.all([
+  const [categoryLabels, sameCategory, reviews, reviewStats] = await Promise.all([
     Store.getCategoryLabels(),
     Store.getApprovedBusinesses({ category: business.category }),
+    Store.getApprovedReviews(business.id),
+    Store.getReviewStats(business.id),
   ]);
   const categoryLabel = categoryLabels[business.category] || business.category;
   const townLabel = business.town ? TOWN_LABELS[business.town] || business.town : null;
@@ -91,6 +87,18 @@ export default async function BusinessPage({ params }: PageProps<"/business/[id]
             </div>
 
             <div className="bp2-score">
+              {reviewStats && (
+                <>
+                  <a className="bp2-stars" href="#reviews">
+                    <span className="bp2-stars-num">{reviewStats.avgRating.toFixed(1)}</span>
+                    <Stars rating={reviewStats.avgRating} />
+                    <span>
+                      {reviewStats.reviewCount} review{reviewStats.reviewCount === 1 ? "" : "s"}
+                    </span>
+                  </a>
+                  <span className="bp2-dot">•</span>
+                </>
+              )}
               <span className="bp2-score-num">
                 <span aria-hidden="true">▲</span> <VoteCount />
               </span>
@@ -167,9 +175,45 @@ export default async function BusinessPage({ params }: PageProps<"/business/[id]
             </div>
           </section>
 
+          <section id="reviews" className="bp2-section" aria-labelledby="bp2-member-reviews">
+            <h2 id="bp2-member-reviews" className="bp2-h2">
+              Reviews
+              {reviewStats && <span className="bp2-h2-sub"> · {reviewStats.avgRating.toFixed(1)} average</span>}
+            </h2>
+            <div className="bp2-review-compose">
+              <ReviewComposer businessId={business.id} businessName={business.name} />
+            </div>
+            {reviews.length === 0 ? (
+              <p className="bp2-empty">No reviews yet — be the first to share what it&apos;s like.</p>
+            ) : (
+              <div className="bp2-reviews">
+                {reviews.map((r) => (
+                  <article className="bp2-review" key={r.id}>
+                    <span className="bp2-avatar" aria-hidden="true">
+                      {initials(r.authorName)}
+                    </span>
+                    <div className="bp2-review-body">
+                      <div className="bp2-review-top">
+                        <Link className="bp2-review-name" href={memberHref(r.authorName)}>
+                          {r.authorName}
+                        </Link>
+                        <Stars rating={r.rating} size={14} />
+                        <time className="bp2-review-date" dateTime={r.createdAt}>
+                          {formatReviewDate(r.createdAt)}
+                        </time>
+                      </div>
+                      <p className="bp2-review-quote">{r.body}</p>
+                      <ReportReviewButton reviewId={r.id} />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+
           {business.testimonials.length > 0 && (
-            <section className="bp2-section" aria-labelledby="bp2-reviews">
-              <h2 id="bp2-reviews" className="bp2-h2">
+            <section className="bp2-section" aria-labelledby="bp2-testimonials">
+              <h2 id="bp2-testimonials" className="bp2-h2">
                 What people are saying
               </h2>
               <div className="bp2-reviews">
@@ -252,6 +296,14 @@ export default async function BusinessPage({ params }: PageProps<"/business/[id]
                 <div>
                   <dt>Price</dt>
                   <dd>{business.priceRange}</dd>
+                </div>
+              )}
+              {reviewStats && (
+                <div>
+                  <dt>Rating</dt>
+                  <dd>
+                    {reviewStats.avgRating.toFixed(1)} ({reviewStats.reviewCount})
+                  </dd>
                 </div>
               )}
               <div>

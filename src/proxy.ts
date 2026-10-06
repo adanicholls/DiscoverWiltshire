@@ -44,6 +44,10 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
+// Admin routes are gated; the member routes are listed only so their
+// session cookie gets refreshed (a member's access token lasts an hour, and
+// Server Components can't write the refreshed cookie themselves). Visitors
+// without a cookie cost nothing here - there's no session to look up.
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/account/:path*", "/business/:path*", "/login", "/signup"],
 };

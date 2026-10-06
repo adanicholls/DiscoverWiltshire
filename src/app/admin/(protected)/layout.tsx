@@ -38,6 +38,12 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             <Link className="nav-item" href="/admin/journal">
               Journal
             </Link>
+            <Link className="nav-item" href="/admin/reviews">
+              Reviews
+            </Link>
+            <Link className="nav-item" href="/admin/members">
+              Members
+            </Link>
           </nav>
           <div className="nav-utility">
             <span className="sign-in" style={{ opacity: 0.6 }}>{user?.email}</span>

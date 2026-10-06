@@ -141,6 +141,16 @@ body:has(.ph-home) {
 .ph-pill-coral:hover { background: #ff7468; }
 .ph-pill-label-short { display: none; }
 
+/* Account link in the top bar: a "Sign in" text link, or - once signed in -
+   the member's initials and name. */
+.ph-signin-link { padding: 0 12px; font-size: 14px; font-weight: 500; color: var(--ph-text); white-space: nowrap; }
+.ph-signin-link:hover { text-decoration: underline; }
+.ph-member-link { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 12px 0 6px; border-radius: 9999px; font-size: 14px; font-weight: 500; color: var(--ph-text); max-width: 200px; }
+.ph-member-link:hover { background: rgba(255, 255, 255, 0.08); }
+.ph-member-avatar { flex: none; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; background: var(--ph-gradient, linear-gradient(120deg, #ff6154, #d946ef 58%, #7c5cff)); color: #fff; font-size: 11px; font-weight: 700; }
+.ph-member-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ph-drawer-account { display: block; margin: 12px 4px 0; padding: 12px 16px; border-radius: 9999px; border: 1px solid var(--ph-outline); font-size: 14px; font-weight: 500; text-align: center; }
+
 /* ---------- page body ---------- */
 
 .ph-body {
@@ -725,6 +735,7 @@ a.ph-thread:hover .ph-thread-title { color: var(--ph-link); text-decoration: und
   .ph-home .ph-command-select { flex: 1 1 0; }
   .ph-section-title { font-size: 20px; }
   .ph-footer { grid-template-columns: 1fr; padding: 32px 20px 48px; }
+  .ph-signin-link, .ph-member-link { display: none; }
   .ph-pill-label-long { display: none; }
   .ph-pill-label-short { display: inline; }
   .ph-pill-outline .ph-pill-label { display: none; }

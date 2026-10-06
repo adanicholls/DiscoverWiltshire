@@ -26,6 +26,17 @@ export async function createSupabaseServerClient() {
   });
 }
 
+/** The signed-in member (anyone with an account, admin or not), or null.
+ * Server Actions that write on a member's behalf call this first and then use
+ * the same cookie-bound client, so row-level security sees the member. */
+export async function getMemberSession() {
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  return { supabase, user };
+}
+
 /** The current logged-in user's email, or null - and whether it matches
  * ADMIN_EMAIL. Every admin Server Component/Action should check this. */
 export async function getAdminSession() {

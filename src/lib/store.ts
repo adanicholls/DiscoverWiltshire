@@ -23,6 +23,8 @@ import {
   type JournalSummaryRow,
 } from "./journal";
 
+import { REVIEW_COLUMNS, mapReviewRow, type Review, type ReviewRow, type ReviewStats } from "./members";
+
 export interface LiveBusiness extends Business {
   liveVotes: number;
 }
@@ -442,6 +444,39 @@ export const Store = {
       return null;
     }
     return data ? mapJournalEntryRow(data as JournalEntryRow) : null;
+  },
+
+  // Approved reviews for one business, newest first. Row-level security
+  // already limits the public role to approved reviews. A failed lookup (for
+  // instance before the members migration has been run) returns an empty
+  // list, logged, rather than taking the business page down.
+  async getApprovedReviews(businessId: string): Promise<Review[]> {
+    const { data, error } = await supabase
+      .from("reviews")
+      .select(REVIEW_COLUMNS)
+      .eq("business_id", businessId)
+      .eq("status", "approved")
+      .order("created_at", { ascending: false });
+    if (error) {
+      console.error("Failed to load reviews:", error);
+      return [];
+    }
+    return (data as ReviewRow[]).map(mapReviewRow);
+  },
+
+  // Average rating and count for one business, or null if it has no
+  // approved reviews (or the lookup failed).
+  async getReviewStats(businessId: string): Promise<ReviewStats | null> {
+    const { data, error } = await supabase
+      .from("business_review_stats")
+      .select("review_count, avg_rating")
+      .eq("business_id", businessId)
+      .maybeSingle();
+    if (error) {
+      console.error("Failed to load review stats:", error);
+      return null;
+    }
+    return data ? { reviewCount: data.review_count as number, avgRating: Number(data.avg_rating) } : null;
   },
 
   // Trade categories (e.g. "Painters", "Plumbers") are admin-editable via

@@ -31,6 +31,8 @@ export default function HomeFooter() {
         <Link href="/journal">Journal</Link>
         <Link href="/list-your-business">List your business</Link>
         <Link href="/pricing">Pricing</Link>
+        <Link href="/terms">Terms</Link>
+        <Link href="/privacy">Privacy</Link>
       </div>
       <p className="ph-footer-note">Discover Wiltshire — the only list you&apos;ll need</p>
     </footer>
