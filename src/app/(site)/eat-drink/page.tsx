@@ -16,16 +16,18 @@ export default async function EatDrinkPage({ searchParams }: PageProps<"/eat-dri
   return (
     <>
       <div className="wrap">
-        <h1 className="page-title">Eat &amp; drink{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
-        <p className="page-subtitle">
-          Every pub, café, and restaurant {townLabel ? `near ${townLabel}` : "in the county"}, ranked by the people
-          who actually eat there.
-        </p>
-
-        <CategoryTabs active="/eat-drink" />
-
-        <div className="home-layout home-layout--single-row">
+        <div className="home-layout home-layout--single-row home-layout--titled">
           <div className="home-main">
+            <div className="page-head">
+              <h1 className="page-title">Eat &amp; drink{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
+              <p className="page-subtitle">
+                Every pub, café, and restaurant {townLabel ? `near ${townLabel}` : "in the county"}, ranked by the people
+                who actually eat there.
+              </p>
+
+              <CategoryTabs active="/eat-drink" />
+            </div>
+
             <div className="period-toggle">
               <button className="active">Today</button>
               <span>·</span>

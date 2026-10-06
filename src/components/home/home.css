@@ -154,6 +154,9 @@ body:has(.ph-home) {
    columns) but the panel already provides the side padding. */
 .ph-main .wrap { padding-left: 0; padding-right: 0; }
 
+/* The right-hand sponsor/events column sticks below the fixed top bar. */
+.ph-main .home-sidebar { top: calc(var(--ph-header) + 20px); }
+
 /* The site's call-to-action band is an inverted block (ink background);
    inside the dark panel it would turn light grey, so it gets a dark card. */
 .ph-main .cta-band { background: var(--ph-field); border: 1px solid var(--ph-outline); color: var(--ph-text); }

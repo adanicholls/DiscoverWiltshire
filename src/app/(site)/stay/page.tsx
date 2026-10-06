@@ -16,16 +16,18 @@ export default async function StayPage({ searchParams }: PageProps<"/stay">) {
   return (
     <>
       <div className="wrap">
-        <h1 className="page-title">Stay{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
-        <p className="page-subtitle">
-          B&amp;Bs, cottages, and places to sleep {townLabel ? `near ${townLabel}` : ""}, ranked by the people
-          who&apos;ve stayed there.
-        </p>
-
-        <CategoryTabs active="/stay" />
-
-        <div className="home-layout home-layout--single-row">
+        <div className="home-layout home-layout--single-row home-layout--titled">
           <div className="home-main">
+            <div className="page-head">
+              <h1 className="page-title">Stay{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
+              <p className="page-subtitle">
+                B&amp;Bs, cottages, and places to sleep {townLabel ? `near ${townLabel}` : ""}, ranked by the people
+                who&apos;ve stayed there.
+              </p>
+
+              <CategoryTabs active="/stay" />
+            </div>
+
             <div className="period-toggle">
               <button className="active">Today</button>
               <span>·</span>

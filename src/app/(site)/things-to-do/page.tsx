@@ -16,15 +16,17 @@ export default async function ThingsToDoPage({ searchParams }: PageProps<"/thing
   return (
     <>
       <div className="wrap">
-        <h1 className="page-title">Things to do{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
-        <p className="page-subtitle">
-          Activities, days out, and ways to spend a weekend {townLabel ? `near ${townLabel}` : ""}, ranked by locals.
-        </p>
-
-        <CategoryTabs active="/things-to-do" />
-
-        <div className="home-layout home-layout--single-row">
+        <div className="home-layout home-layout--single-row home-layout--titled">
           <div className="home-main">
+            <div className="page-head">
+              <h1 className="page-title">Things to do{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
+              <p className="page-subtitle">
+                Activities, days out, and ways to spend a weekend {townLabel ? `near ${townLabel}` : ""}, ranked by locals.
+              </p>
+
+              <CategoryTabs active="/things-to-do" />
+            </div>
+
             <div className="period-toggle">
               <button className="active">Today</button>
               <span>·</span>

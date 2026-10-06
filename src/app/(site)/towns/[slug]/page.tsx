@@ -58,16 +58,18 @@ export default async function TownPage({ params }: PageProps<"/towns/[slug]">) {
   return (
     <>
       <div className="wrap">
-        <h1 className="page-title">{label}, ranked</h1>
-        <p className="page-subtitle">
-          Every pub, stay, activity, shop, and local trade near {label}, ranked by the people who actually use them.
-        </p>
-
         {/* Same two-column shape as the homepage: the ranked sections on the
             left, this town's sponsor and upcoming events in a sidebar on the
             right (stacking below on narrow screens, sponsor first). */}
-        <div className="home-layout home-layout--single-row">
+        <div className="home-layout home-layout--single-row home-layout--titled">
           <div className="home-main">
+            <div className="page-head">
+              <h1 className="page-title">{label}, ranked</h1>
+              <p className="page-subtitle">
+                Every pub, stay, activity, shop, and local trade near {label}, ranked by the people who actually use them.
+              </p>
+            </div>
+
             {DIRECT_CATEGORY_PAGES.map((catId) => (
               <section key={catId} style={{ marginBottom: 8 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", gap: 10 }}>

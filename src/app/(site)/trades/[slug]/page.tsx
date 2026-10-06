@@ -50,19 +50,21 @@ export default async function TradeCategoryPage({ params, searchParams }: PagePr
   return (
     <>
       <div className="wrap">
-        <h1 className="page-title">
-          {label}
-          {townLabel ? ` near ${townLabel}` : ""}, ranked
-        </h1>
-        <p className="page-subtitle">
-          {label} {townLabel ? `near ${townLabel}` : "across Wiltshire"}, ranked by the people who&apos;ve actually
-          hired them.
-        </p>
-
-        <TradeChips activeSlug={slug} />
-
-        <div className="home-layout home-layout--single-row">
+        <div className="home-layout home-layout--single-row home-layout--titled">
           <div className="home-main">
+            <div className="page-head">
+              <h1 className="page-title">
+                {label}
+                {townLabel ? ` near ${townLabel}` : ""}, ranked
+              </h1>
+              <p className="page-subtitle">
+                {label} {townLabel ? `near ${townLabel}` : "across Wiltshire"}, ranked by the people who&apos;ve
+                actually hired them.
+              </p>
+
+              <TradeChips activeSlug={slug} />
+            </div>
+
             <div className="period-toggle">
               <button className="active">Today</button>
               <span>·</span>

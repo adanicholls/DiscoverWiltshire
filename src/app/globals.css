@@ -639,6 +639,23 @@ img { max-width: 100%; display: block; }
   .sponsor-card { order: -1; }
 }
 
+/* Category, trade and town pages put their title block (heading, intro,
+   tabs) inside the left column, so the sponsor card on the right starts
+   level with the page title instead of below the tabs. */
+.home-layout--titled { margin-top: 22px; }
+.home-layout--titled .page-head .page-title { margin-top: 0; }
+@media (min-width: 861px) {
+  /* Lines the card's top edge up with the cap height of the 28px title. */
+  .home-layout--titled > .home-sidebar { margin-top: 6px; }
+}
+@media (max-width: 860px) {
+  /* On a phone the title stays first, then the sponsor, then the list:
+     the main column dissolves so its parts can be ordered individually. */
+  .home-layout--titled > .home-main { display: contents; }
+  .home-layout--titled .page-head { order: -2; }
+  .home-layout--titled .sponsor-card { order: -1; }
+}
+
 /* ---------------- Events calendar ---------------- */
 /* Same date-badge/thumbnail/title/CTA row layout as a typical event
    listings site (grouped by month, soonest first), in this site's own

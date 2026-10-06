@@ -16,16 +16,18 @@ export default async function ShopsPage({ searchParams }: PageProps<"/shops">) {
   return (
     <>
       <div className="wrap">
-        <h1 className="page-title">Shops{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
-        <p className="page-subtitle">
-          Local shops and services worth knowing about {townLabel ? `near ${townLabel}` : ""}, ranked by the people
-          who use them.
-        </p>
-
-        <CategoryTabs active="/shops" />
-
-        <div className="home-layout home-layout--single-row">
+        <div className="home-layout home-layout--single-row home-layout--titled">
           <div className="home-main">
+            <div className="page-head">
+              <h1 className="page-title">Shops{townLabel ? ` near ${townLabel}` : ""}, ranked</h1>
+              <p className="page-subtitle">
+                Local shops and services worth knowing about {townLabel ? `near ${townLabel}` : ""}, ranked by the people
+                who use them.
+              </p>
+
+              <CategoryTabs active="/shops" />
+            </div>
+
             <div className="period-toggle">
               <button className="active">Today</button>
               <span>·</span>
