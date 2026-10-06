@@ -53,13 +53,22 @@ function useVote(): VoteState {
   return ctx;
 }
 
-export function UpvoteButton() {
+/** The live upvote total, as plain text, so it moves when this page's
+ * upvote buttons are used. */
+export function VoteCount() {
+  const { votes } = useVote();
+  return <>{votes}</>;
+}
+
+/** The main upvote action on a business profile: the gradient button with
+ * the running total, which turns into a "voted" state once this browser has
+ * used its one vote. */
+export function UpvoteActionButton() {
   const { votes, voted, vote } = useVote();
   return (
-    <button className="bp-upvote" disabled={voted} onClick={vote}>
-      <span style={{ fontSize: 18, color: "var(--terracotta)" }}>▲</span>
-      <span style={{ fontSize: 14, fontWeight: 500, color: "var(--terracotta)" }}>{votes}</span>
-      <span style={{ fontSize: 10, opacity: 0.6 }}>upvotes</span>
+    <button type="button" className="btn btn-primary" disabled={voted} onClick={vote}>
+      <span aria-hidden="true">▲</span>
+      {voted ? "Upvoted" : "Upvote"} · {votes}
     </button>
   );
 }

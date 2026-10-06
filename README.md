@@ -31,7 +31,7 @@ npm run dev
 | `/eat-drink`, `/stay`, `/things-to-do`, `/shops` | The four core category pages — each with a sponsor card and upcoming events in a right-hand column |
 | `/trades`, `/trades/[slug]` | Trades & services hub, plus one generic page for each of 30 trade categories — see `TRADE_CATEGORIES` in `src/lib/data.ts` to add more |
 | `/towns`, `/towns/[slug]` | A directory of Wiltshire's major towns, plus one generic page per town mixing every category — see `TOWNS` in `src/lib/data.ts` |
-| `/business/[id]` | Individual business profile page |
+| `/business/[id]` | Individual business profile page, laid out like a map-listing profile: title with Share, upvote count and category rank, tags, action buttons (Upvote, Directions, Call, Website), photos, About, "what people are saying", and a column of cards (Find us, At a glance, More in this category, upcoming events in its town). Styles in `src/components/business/business.css`. There's no stored data for opening hours, amenities or star ratings, so those sections aren't shown; the photo tiles are still colour-block placeholders |
 | `/list-your-business` | Free listing submission form, with an optional founding-membership add-on |
 | `/pricing` | Pricing copy for all revenue lines (promoted slots, category and town sponsorship, featured upgrade, founding membership) |
 | `/admin`, `/admin/businesses`, `/admin/businesses/[id]/edit` | Approval queue and business editor — real Supabase Auth login required, gated by `src/proxy.ts` and re-checked in every Server Action |

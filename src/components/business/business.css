@@ -1,0 +1,137 @@
+/* ---------------------------------------------------
+   Business profile - a two-column profile page: title, score, tags and
+   actions, then photos, about and reviews on the left; contact, "at a
+   glance" and related cards in a sticky column on the right. Colours come
+   from the site's dark tokens, so it matches the rest of the shell.
+--------------------------------------------------- */
+
+.bp2-back { display: inline-block; margin-bottom: 20px; font-size: 13px; color: var(--ink-muted); }
+.bp2-back:hover { color: var(--ink); }
+
+.bp2 {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 40px;
+  align-items: start;
+}
+
+.bp2-main { min-width: 0; }
+
+/* ---------- title block ---------- */
+
+.bp2-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.bp2-name { flex: 1; min-width: 0; margin: 0; font-size: 36px; font-weight: 400; line-height: 1.15; letter-spacing: -0.8px; }
+
+.bp2-score { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; font-size: 14px; color: var(--ink-muted); }
+.bp2-score-num { font-weight: 600; color: var(--terracotta); }
+.bp2-dot { color: var(--ink-muted); opacity: 0.7; }
+
+.bp2-tags { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; font-size: 14px; color: var(--ink); }
+.bp2-tag { display: inline-flex; align-items: center; gap: 8px; }
+
+.bp2-tagline { margin: 12px 0 0; font-size: 15px; color: var(--ink-muted); line-height: 1.5; }
+
+.bp2-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.bp2-actions .btn, .bp2-title-row .btn { padding: 10px 16px; }
+
+/* ---------- sections ---------- */
+
+.bp2-section { margin-top: 36px; }
+.bp2-h2 { margin: 0 0 14px; font-size: 18px; font-weight: 500; }
+
+.bp2-photos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.bp2-photo { aspect-ratio: 4 / 5; border-radius: 12px; }
+
+.bp2-about { margin: 0; max-width: 68ch; font-size: 15px; line-height: 1.7; color: var(--ink); opacity: 0.88; }
+
+.bp2-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.bp2-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 14px;
+  border: 1px solid #444746;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-muted);
+}
+
+.bp2-reviews { display: flex; flex-direction: column; gap: 10px; }
+.bp2-review {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: #1a1a1c;
+}
+.bp2-avatar {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(120deg, #ff6154 0%, #d946ef 58%, #7c5cff 100%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+}
+.bp2-review-name { font-size: 14px; font-weight: 500; }
+.bp2-review-quote { margin: 4px 0 0; font-size: 14px; line-height: 1.6; color: var(--ink-muted); }
+
+.bp2-main .cta-band { margin-top: 40px; }
+
+/* ---------- sidebar ---------- */
+
+.bp2-side { position: sticky; top: calc(var(--ph-header, 72px) + 20px); display: flex; flex-direction: column; gap: 16px; }
+
+.bp2-card {
+  padding: 18px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: #1a1a1c;
+}
+.bp2-card-title { margin: 0 0 14px; font-size: 16px; font-weight: 500; }
+.bp2-card-link { display: inline-block; margin-top: 14px; font-size: 13px; font-weight: 500; color: var(--terracotta); }
+.bp2-card-link:hover { text-decoration: underline; }
+
+.bp2-rows { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.bp2-rows dt { font-size: 12px; color: var(--ink-muted); margin-bottom: 2px; }
+.bp2-rows dd { margin: 0; font-size: 14px; line-height: 1.5; word-break: break-word; }
+.bp2-rows a { color: #8ab4f8; }
+.bp2-rows a:hover { text-decoration: underline; }
+
+/* "At a glance": label on the left, value on the right. */
+.bp2-rows--split { gap: 0; }
+.bp2-rows--split > div { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.bp2-rows--split > div:first-child { border-top: 0; padding-top: 0; }
+.bp2-rows--split dt { margin: 0; font-size: 13px; }
+.bp2-rows--split dd { font-weight: 500; text-align: right; }
+
+.bp2-more { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.bp2-more-row { display: flex; align-items: center; gap: 12px; margin: 0 -10px; padding: 8px 10px; border-radius: 10px; }
+.bp2-more-row:hover { background: var(--surface-muted); }
+.bp2-more-thumb { flex: none; width: 36px; height: 36px; border-radius: 8px; }
+.bp2-more-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.bp2-more-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bp2-more-tag { font-size: 12px; color: var(--ink-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bp2-more-votes { font-size: 12px; font-weight: 600; color: var(--ink-muted); }
+
+/* ---------- smaller screens ---------- */
+
+/* The page already sits beside the shell's own sidebar, so two columns only
+   have room above ~1400px; below that the cards drop under the main column
+   and sit side by side in a row (or stack on a phone). */
+@media (max-width: 1399px) {
+  .bp2 { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .bp2-side { position: static; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); align-items: start; }
+}
+
+@media (max-width: 560px) {
+  .bp2-name { font-size: 28px; }
+  .bp2-photos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .bp2-title-row { flex-direction: column; align-items: stretch; }
+  .bp2-title-row .btn { align-self: flex-start; }
+}

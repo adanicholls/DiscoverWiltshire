@@ -125,6 +125,29 @@ export const ArticleIcon = (p: P) => (
     <path d="M9 8h6M9 12h6M9 16h3" />
   </Icon>
 );
+export const PhoneIcon = (p: P) => (
+  <Icon {...p}>
+    <path d="M5 4h3.5l1.5 4-2 1.5a11 11 0 0 0 6.5 6.5l1.5-2 4 1.5V19a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2z" />
+  </Icon>
+);
+export const GlobeIcon = (p: P) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" />
+  </Icon>
+);
+export const DirectionsIcon = (p: P) => (
+  <Icon {...p}>
+    <path d="M12 3 21 12l-9 9-9-9z" />
+    <path d="M9 13v-2.5a1.5 1.5 0 0 1 1.5-1.5H15m0 0-2-2m2 2-2 2" />
+  </Icon>
+);
+export const ShareIcon = (p: P) => (
+  <Icon {...p}>
+    <path d="M12 15V4m0 0L8 8m4-4 4 4" />
+    <path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6" />
+  </Icon>
+);
 export const UpvoteIcon = (p: P) => (
   <svg
     width={p.size ?? 12}
