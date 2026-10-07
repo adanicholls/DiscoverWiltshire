@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import TradeChips from "@/components/TradeChips";
 import Leaderboard from "@/components/Leaderboard";
 import PageSidebar from "@/components/PageSidebar";
 import { Store } from "@/lib/store";
@@ -61,8 +60,9 @@ export default async function TradeCategoryPage({ params, searchParams }: PagePr
                 {label} {townLabel ? `near ${townLabel}` : "across Wiltshire"}, ranked by the people who&apos;ve
                 actually hired them.
               </p>
-
-              <TradeChips activeSlug={slug} />
+              <Link className="breadcrumb" href={town ? `/trades?town=${town}` : "/trades"} style={{ display: "inline-block", padding: 0 }}>
+                ← All trades &amp; services
+              </Link>
             </div>
 
             <div className="period-toggle">

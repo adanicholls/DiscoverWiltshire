@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import CategoryTabs from "@/components/CategoryTabs";
 import Leaderboard from "@/components/Leaderboard";
 import PageSidebar from "@/components/PageSidebar";
 import { CATEGORY_LABELS_CORE, TOWN_LABELS } from "@/lib/data";
@@ -24,8 +23,6 @@ export default async function StayPage({ searchParams }: PageProps<"/stay">) {
                 B&amp;Bs, cottages, and places to sleep {townLabel ? `near ${townLabel}` : ""}, ranked by the people
                 who&apos;ve stayed there.
               </p>
-
-              <CategoryTabs active="/stay" />
             </div>
 
             <div className="period-toggle">
