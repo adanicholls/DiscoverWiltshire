@@ -106,7 +106,6 @@ export default function Leaderboard({ category, categories, town, showCategoryTa
       {businesses.map((b, i) => (
         <div className="lb-row" key={b.id}>
           <div className="lb-rank">{i + 1}</div>
-          <div className="lb-thumb" style={{ background: b.photoColor || "#D9C7A3" }} />
           <div className="lb-info">
             <div className="lb-name-row">
               <Link className="lb-name" href={`/business/${b.id}`}>
