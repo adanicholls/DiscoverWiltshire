@@ -135,6 +135,22 @@ function mapEventRow(row: EventRow): LiveEvent {
   };
 }
 
+/** The one event that gets the banner slot at the top of /whats-on. */
+export interface FeaturedEvent extends LiveEvent {
+  endsAt: string | null;
+  imageUrl: string;
+  /** "Sponsored" for a paid placement, "Featured" for an editorial pick. */
+  sponsorLabel: string;
+  ctaLabel: string;
+}
+
+interface FeaturedEventRow extends EventRow {
+  ends_at: string | null;
+  image_url: string;
+  sponsor_label: string;
+  cta_label: string;
+}
+
 export type SponsorTargetType = "category" | "town";
 
 export interface Sponsorship {
@@ -367,6 +383,42 @@ export const Store = {
     const { data, error } = await query;
     if (error) throw error;
     return (data as EventRow[]).map(mapEventRow);
+  },
+
+  // The featured event, if there is one and it hasn't finished. It keeps its
+  // slot while it's running (until ends_at, or its start for a one-day event),
+  // not just until it begins. Kept separate from getUpcomingEvents on purpose:
+  // if the columns don't exist yet (migration 0008 not run) or the lookup
+  // fails, this returns null and every other events query is unaffected.
+  async getFeaturedEvent(): Promise<FeaturedEvent | null> {
+    const { data, error } = await supabase
+      .from("events")
+      .select(
+        "id, name, description, starts_at, ends_at, venue, town_id, website, price_text, photo_color, image_url, sponsor_label, cta_label"
+      )
+      .eq("status", "approved")
+      .eq("featured", true)
+      .maybeSingle();
+    if (error) {
+      // 42703/PGRST204 = the featured columns haven't been added yet; that's expected, not worth logging.
+      if (error.code !== "42703" && error.code !== "PGRST204" && error.code !== "PGRST200") {
+        console.error("Failed to load featured event:", error);
+      }
+      return null;
+    }
+    if (!data) return null;
+
+    const row = data as FeaturedEventRow;
+    const lastMoment = new Date(row.ends_at ?? row.starts_at).getTime();
+    if (lastMoment < Date.now()) return null;
+
+    return {
+      ...mapEventRow(row),
+      endsAt: row.ends_at,
+      imageUrl: row.image_url,
+      sponsorLabel: row.sponsor_label || "Featured",
+      ctaLabel: row.cta_label || "Find out more",
+    };
   },
 
   // Submitting an event inserts straight into events with status='pending',

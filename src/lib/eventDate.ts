@@ -27,6 +27,21 @@ export function formatEventDate(iso: string): FormattedEventDate {
   return { weekday, day, month, monthLong, year, time };
 }
 
+/** "24 Oct – 1 Nov 2026" for a multi-day event, "24 Oct 2026" for one day.
+ * Always in UK time, like everything else here. */
+export function formatEventRange(startIso: string, endIso: string | null): string {
+  const part = (iso: string, withYear: boolean) =>
+    new Intl.DateTimeFormat("en-GB", {
+      day: "numeric",
+      month: "short",
+      ...(withYear ? { year: "numeric" } : {}),
+      timeZone: "Europe/London",
+    }).format(new Date(iso));
+
+  const sameDay = !endIso || part(startIso, true) === part(endIso, true);
+  return sameDay ? part(startIso, true) : `${part(startIso, false)} – ${part(endIso, true)}`;
+}
+
 /** Groups events (already sorted by date) into "July 2026"-style month buckets. */
 export function groupEventsByMonth<T extends { startsAt: string }>(events: T[]): { label: string; events: T[] }[] {
   const groups: { label: string; events: T[] }[] = [];

@@ -38,7 +38,7 @@ npm run dev
 | `/admin/categories`, `/admin/events`, `/admin/sponsors` | Manage trade categories, the events calendar, and the sponsor shown on each category/town page (image upload goes to the public `sponsor-images` Storage bucket) |
 | `/admin/journal`, `/admin/journal/new`, `/admin/journal/[id]/edit` | Write and manage Journal entries: Markdown editor with toolbar, live preview and inline image upload (to the public `journal-images` bucket), drafts, and scheduling by setting a future publish date |
 | `/journal`, `/journal/[slug]` | The Journal (formerly "Our story" at `/about`, which redirects here). The index is a filterable card grid with "Load more"; an **article** has its own page (sticky title column beside the article, share buttons, related entries), a **news** card links out to another site. `/journal?category=…` and `?type=news` are shareable filtered views |
-| `/whats-on`, `/whats-on/add` | The events calendar and its public submission form (events are approved in `/admin`) |
+| `/whats-on`, `/whats-on/add` | The events calendar and its public submission form (events are approved in `/admin`). One event can hold the **featured / sponsored banner slot** at the top of `/whats-on`: a big image card with dates, venue and a button, labelled "Sponsored" or "Featured". Set it in `/admin/events` → Edit → "Featured slot" (only one at a time; it stays up until its last day). Needs `supabase/migrations/0008_featured_event.sql`, which also adds Longleat's Spooktacular Adventures (24 Oct – 1 Nov 2026) as the first one; until it's run the page simply shows no banner |
 
 ## Data model
 

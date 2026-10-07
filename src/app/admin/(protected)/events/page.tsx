@@ -43,6 +43,7 @@ export default async function AdminEventsPage() {
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                   <span style={{ fontSize: 14, fontWeight: 500 }}>{ev.name}</span>
                   <span style={{ fontSize: 11, fontWeight: 500, color: STATUS_COLORS[ev.status] }}>{ev.status}</span>
+                  {ev.featured && <span className="tag tag-promoted">{ev.sponsor_label || "Featured"}</span>}
                 </div>
                 <div style={{ fontSize: 12, opacity: 0.6, marginTop: 2 }}>
                   {weekday} {day} {month}, {time} · {ev.venue}
