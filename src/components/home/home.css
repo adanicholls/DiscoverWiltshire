@@ -165,16 +165,30 @@ body:has(.ph-home) {
 }
 
 .ph-home .btn-primary,
-.ph-home .ph-pill-coral,
 .ph-home .ph-btn-blue {
   background: var(--ph-gradient);
   color: #fff;
   border-color: transparent;
 }
 .ph-home .btn-primary:hover:not(:disabled),
-.ph-home .ph-pill-coral:hover,
 .ph-home .ph-btn-blue:hover { background: var(--ph-gradient); filter: brightness(1.1); }
 .ph-home .ph-btn-blue kbd { background: rgba(255, 255, 255, 0.22); }
+
+/* The "List your business" pill in the top bar is the outlined version: the
+   same gradient, but as a border around a dark fill (the gradient is painted
+   on the border box, the dark colour over the padding box). */
+.ph-home .ph-pill-coral {
+  border: 1.5px solid transparent;
+  background:
+    linear-gradient(var(--ph-page), var(--ph-page)) padding-box,
+    var(--ph-gradient) border-box;
+  color: #fff;
+}
+.ph-home .ph-pill-coral:hover {
+  background:
+    linear-gradient(#2a2b2d, #2a2b2d) padding-box,
+    var(--ph-gradient) border-box;
+}
 
 .ph-home .btn-secondary {
   background: transparent;
