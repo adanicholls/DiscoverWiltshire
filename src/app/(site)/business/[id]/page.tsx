@@ -332,7 +332,6 @@ export default async function BusinessPage({ params }: PageProps<"/business/[id]
                 {more.map((b) => (
                   <li key={b.id}>
                     <Link href={`/business/${b.id}`} className="bp2-more-row">
-                      <span className="bp2-more-thumb" style={{ background: b.photoColor }} aria-hidden="true" />
                       <span className="bp2-more-text">
                         <span className="bp2-more-name">{b.name}</span>
                         <span className="bp2-more-tag">{b.tagline}</span>

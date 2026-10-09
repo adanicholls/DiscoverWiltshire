@@ -158,9 +158,6 @@ export default function HomeFeed({ town }: { town?: string }) {
                   <li key={b.id} className="ph-row">
                     <span className="ph-rank">{i + 1}</span>
                     <Link href={`/business/${b.id}`} className="ph-post">
-                      <span className="ph-thumb" style={{ background: b.photoColor || "#D9C7A3" }} aria-hidden="true">
-                        {b.name.charAt(0).toUpperCase()}
-                      </span>
                       <span className="ph-post-text">
                         <span className="ph-post-name">
                           <span className="ph-post-name-text">{b.name}</span>

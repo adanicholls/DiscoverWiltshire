@@ -26,17 +26,17 @@ export default function PricingPage() {
            one gets the coral -> magenta -> violet gradient as its outline. */
         .faq-accordion { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
         .faq-accordion__item {
-          background: #1a1a1c;
+          background: var(--ph-card);
           border: 1px solid var(--border);
           border-radius: var(--radius-lg);
           padding: 0 20px;
           transition: border-color 0.15s ease;
         }
-        .faq-accordion__item:hover { border-color: #444746; }
+        .faq-accordion__item:hover { border-color: var(--ph-outline); }
         .faq-accordion__item[open] {
           border-color: transparent;
           background:
-            linear-gradient(#1a1a1c, #1a1a1c) padding-box,
+            linear-gradient(var(--ph-card), var(--ph-card)) padding-box,
             linear-gradient(120deg, #ff6154 0%, #d946ef 58%, #7c5cff 100%) border-box;
         }
         .faq-accordion__q {
@@ -51,7 +51,7 @@ export default function PricingPage() {
         }
         .faq-accordion__q::-webkit-details-marker { display: none; }
         .faq-accordion__q::marker { content: ""; }
-        .faq-accordion__q:hover { color: #fff; }
+        .faq-accordion__q:hover { color: var(--ph-strong); }
         .faq-accordion__q::after {
           content: "";
           position: absolute;
@@ -66,7 +66,7 @@ export default function PricingPage() {
           opacity: 0.55;
         }
         .faq-accordion__item[open] > .faq-accordion__q::after { transform: translateY(-30%) rotate(225deg); }
-        .faq-accordion__item[open] > .faq-accordion__q { color: #fff; }
+        .faq-accordion__item[open] > .faq-accordion__q { color: var(--ph-strong); }
         .faq-accordion__item[open] > .faq-accordion__q::after { opacity: 1; color: #ff6154; }
         .faq-accordion__a { padding: 0 20px 18px 0; font-size: 13.5px; line-height: 1.6; color: var(--ink-muted); }
         .faq-accordion__item[open] .faq-accordion__a { animation: faq-accordion-in 0.3s cubic-bezier(0.2, 0.7, 0.3, 1); }
@@ -99,7 +99,7 @@ export default function PricingPage() {
            borders, the coral -> magenta -> violet gradient from the homepage
            hero on the free tier, and the sidebar's blue for founding members. */
         .pricing-bento__tile {
-          background: #1a1a1c;
+          background: var(--ph-card);
           border: 1px solid var(--border);
           transition: border-color 0.15s ease;
           border-radius: var(--radius-lg);
@@ -166,16 +166,16 @@ export default function PricingPage() {
         .pricing-bento__stat-num {
           font-family: var(--font-voice);
           font-size: clamp(28px, 4vw, 40px);
-          background: linear-gradient(90deg, #8ab4f8, #d946ef 55%, #ff6154);
+          background: linear-gradient(90deg, var(--ph-link), #d946ef 55%, #ff6154);
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
         }
         .pricing-bento__stat-lbl { font-size: 12px; opacity: 0.7; line-height: 1.4; }
-        .pricing-bento__founding { grid-area: founding; background: #004a77; color: #c2e7ff; border: 0; }
-        .pricing-bento__founding .pricing-bento__cta-sm { color: #c2e7ff; border-color: rgba(194,231,255,0.5); }
-        .pricing-bento__founding .pricing-bento__cta-sm:hover { background: rgba(194,231,255,0.12); }
-        .pricing-bento__tile:not(.pricing-bento__hero):not(.pricing-bento__founding):hover { border-color: #444746; }
+        .pricing-bento__founding { grid-area: founding; background: var(--ph-nav-active-bg); color: var(--ph-nav-active-text); border: 0; }
+        .pricing-bento__founding .pricing-bento__cta-sm { color: var(--ph-nav-active-text); border-color: currentColor; }
+        .pricing-bento__founding .pricing-bento__cta-sm:hover { background: var(--ph-hover); }
+        .pricing-bento__tile:not(.pricing-bento__hero):not(.pricing-bento__founding):hover { border-color: var(--ph-outline); }
 
         @media (max-width: 480px) {
           .pricing-bento { grid-template-columns: 1fr; grid-template-areas: "hero" "promoted" "sponsor" "town" "founding" "stat"; }

@@ -41,7 +41,7 @@ npm run dev
 | `/signup`, `/login`, `/account`, `/members/[name]` | Members: create an account (display name, email, password, email confirmation), sign in, an account page (edit your bio, see and delete your own reviews with their approval status) and a public profile listing a member's approved reviews. The header shows "Sign in" or the member's initials. See "Members and reviews" below for the one-off setup |
 | `/terms`, `/privacy` | **Draft** terms of use and privacy notice written to match how the site works — they need a legal check and a contact email adding before launch |
 | `/admin/reviews`, `/admin/members` | Approve or decline new reviews, handle reports on live reviews, and ban/unban members from posting |
-| `/whats-on`, `/whats-on/add` | The events calendar and its public submission form (events are approved in `/admin`) |
+| `/whats-on`, `/whats-on/add` | The events calendar and its public submission form (events are approved in `/admin`). One event can hold the **featured / sponsored banner slot** at the top of `/whats-on`: a big image card with dates, venue and a button, labelled "Sponsored" or "Featured". Set it in `/admin/events` → Edit → "Featured slot" (only one at a time; it stays up until its last day). Needs `supabase/migrations/0008_featured_event.sql`, which also adds Longleat's Spooktacular Adventures (24 Oct – 1 Nov 2026) as the first one; until it's run the page simply shows no banner |
 
 ## Data model
 
@@ -70,6 +70,12 @@ One-off setup:
 5. Fill in the contact details marked `[Add …]` in `/terms` and `/privacy` and have both checked by someone qualified.
 
 Rules worth knowing: one review per member per business; a member can write at most 5 reviews a day (enforced by a database trigger); display names are unique and can't be changed by the member; deleting a review (or an auth user) removes it straight away.
+
+## Light and dark themes
+
+Every public page has a light and a dark version, switched with the **Light / Dark** toggle in the footer. Dark is the default; the choice is remembered in the browser (`localStorage` key `dw-theme`) and applied by a tiny inline script in `src/app/layout.tsx` before the page paints, so there's no flash of the wrong theme. The admin area isn't themed.
+
+How it works: the shell's colours are named variables in `src/components/home/home.css` — dark values on `.ph-home`, light values on `html[data-theme="light"] .ph-home`. Shared site tokens (`--bg`, `--ink`, `--border`…) are re-pointed in the same two blocks, so most components follow automatically. **When writing new styles inside the shell, use these variables (`--ph-card`, `--ph-text`, `--ph-line`, `--ph-link`, `--ph-hover`…) rather than literal colours**, or the light theme will show it.
 
 ## Design system
 

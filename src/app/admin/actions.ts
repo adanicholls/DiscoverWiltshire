@@ -202,11 +202,29 @@ export interface EventEditFields {
   price_text: string;
   photo_color: string;
   status: "pending" | "approved" | "declined";
+  // The featured-slot fields (migration 0008). Optional so the form still
+  // saves normally on a database where that migration hasn't been run: they
+  // are only sent when the edit page found the columns on the row.
+  featured?: boolean;
+  ends_at?: string | null;
+  image_url?: string;
+  sponsor_label?: string;
+  cta_label?: string;
 }
 
 export async function updateEvent(id: string, fields: EventEditFields) {
   await requireAdmin();
   const supabase = createSupabaseAdminClient();
+
+  if (fields.featured) {
+    // Only one event can hold the banner slot (a unique index enforces it),
+    // so release whichever one has it now before this one takes over. Only
+    // an approved event can be featured - a pending one would never show.
+    if (fields.status !== "approved") throw new Error("Only an approved event can be featured - set its status to Approved first.");
+    const { error: clearError } = await supabase.from("events").update({ featured: false }).eq("featured", true).neq("id", id);
+    if (clearError) throw clearError;
+  }
+
   const { error } = await supabase.from("events").update(fields).eq("id", id);
   if (error) throw error;
   revalidatePath("/admin/events");

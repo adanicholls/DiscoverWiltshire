@@ -24,6 +24,9 @@ export default function EventEditForm({ id, initial }: Props) {
   const router = useRouter();
   const [fields, setFields] = useState<EventEditFields>(initial);
   const [startsAtLocal, setStartsAtLocal] = useState(toLocalInputValue(initial.starts_at));
+  const [endsAtLocal, setEndsAtLocal] = useState(initial.ends_at ? toLocalInputValue(initial.ends_at) : "");
+  // The featured-slot controls only appear once migration 0008 has added the columns.
+  const hasFeatured = initial.featured !== undefined;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -38,7 +41,11 @@ export default function EventEditForm({ id, initial }: Props) {
     setSaving(true);
     setError(null);
     try {
-      await updateEvent(id, { ...fields, starts_at: new Date(startsAtLocal).toISOString() });
+      await updateEvent(id, {
+        ...fields,
+        starts_at: new Date(startsAtLocal).toISOString(),
+        ...(hasFeatured ? { ends_at: endsAtLocal ? new Date(endsAtLocal).toISOString() : null } : {}),
+      });
       setSaved(true);
       router.refresh();
     } catch (err) {
@@ -115,6 +122,72 @@ export default function EventEditForm({ id, initial }: Props) {
         <input id="edit-ev-photo-color" type="text" value={fields.photo_color} onChange={(e) => set("photo_color", e.target.value)} />
       </div>
 
+      {hasFeatured && (
+        <fieldset style={{ border: "1px solid var(--border)", borderRadius: "var(--radius)", padding: "16px 18px 6px", margin: "8px 0 20px" }}>
+          <legend style={{ padding: "0 8px", fontSize: 13, fontWeight: 500 }}>Featured slot on /whats-on</legend>
+
+          <div className="field">
+            <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                style={{ width: "auto" }}
+                checked={!!fields.featured}
+                onChange={(e) => set("featured", e.target.checked)}
+              />
+              Show this event in the banner slot at the top of the page
+            </label>
+            <div className="hint">
+              Only one event can hold the slot - ticking this releases whichever event has it now. The event must be
+              Approved. It stays in the slot until its end date below.
+            </div>
+          </div>
+
+          {fields.featured && (
+            <>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+                <div className="field">
+                  <label htmlFor="edit-ev-ends">Last day (optional)</label>
+                  <input
+                    id="edit-ev-ends"
+                    type="datetime-local"
+                    value={endsAtLocal}
+                    onChange={(e) => {
+                      setEndsAtLocal(e.target.value);
+                      setSaved(false);
+                    }}
+                  />
+                  <div className="hint">For a multi-day event. Leave blank for a single day.</div>
+                </div>
+                <div className="field">
+                  <label htmlFor="edit-ev-label">Label on the card</label>
+                  <select id="edit-ev-label" value={fields.sponsor_label ?? "Featured"} onChange={(e) => set("sponsor_label", e.target.value)}>
+                    <option value="Sponsored">Sponsored (paid placement)</option>
+                    <option value="Featured">Featured (editorial pick)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="field">
+                <label htmlFor="edit-ev-image">Banner image address</label>
+                <input
+                  id="edit-ev-image"
+                  type="text"
+                  value={fields.image_url ?? ""}
+                  onChange={(e) => set("image_url", e.target.value)}
+                  placeholder="https://…"
+                />
+                <div className="hint">A wide picture works best (16:9). Make sure you have permission to use it.</div>
+              </div>
+
+              <div className="field">
+                <label htmlFor="edit-ev-cta">Button text</label>
+                <input id="edit-ev-cta" type="text" value={fields.cta_label ?? ""} onChange={(e) => set("cta_label", e.target.value)} />
+                <div className="hint">The button links to the website / ticket link above.</div>
+              </div>
+            </>
+          )}
+        </fieldset>
+      )}
       {error && <p style={{ color: "var(--danger)", fontSize: 13, marginBottom: 12 }}>{error}</p>}
       {saved && <p style={{ color: "var(--green)", fontSize: 13, marginBottom: 12 }}>Saved.</p>}
 

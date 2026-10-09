@@ -40,6 +40,16 @@ export default async function AdminEditEventPage({ params }: PageProps<"/admin/e
           price_text: event.price_text,
           photo_color: event.photo_color,
           status: event.status,
+          // Present only once migration 0008 has been run.
+          ...("featured" in event
+            ? {
+                featured: event.featured as boolean,
+                ends_at: (event.ends_at as string | null) ?? null,
+                image_url: (event.image_url as string) ?? "",
+                sponsor_label: (event.sponsor_label as string) || "Featured",
+                cta_label: (event.cta_label as string) || "Find out more",
+              }
+            : {}),
         }}
       />
     </>

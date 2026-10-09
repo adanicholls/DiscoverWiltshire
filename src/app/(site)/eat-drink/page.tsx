@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import CategoryTabs from "@/components/CategoryTabs";
 import Leaderboard from "@/components/Leaderboard";
 import PageSidebar from "@/components/PageSidebar";
 import { CATEGORY_LABELS_CORE, TOWN_LABELS } from "@/lib/data";
@@ -24,8 +23,6 @@ export default async function EatDrinkPage({ searchParams }: PageProps<"/eat-dri
                 Every pub, café, and restaurant {townLabel ? `near ${townLabel}` : "in the county"}, ranked by the people
                 who actually eat there.
               </p>
-
-              <CategoryTabs active="/eat-drink" />
             </div>
 
             <div className="period-toggle">

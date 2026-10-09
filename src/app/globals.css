@@ -369,33 +369,6 @@ img { max-width: 100%; display: block; }
 .search-box::placeholder { color: var(--ink); opacity: 0.5; }
 .search-box:focus { outline: none; border-color: var(--terracotta); }
 
-/* ---------------- Tabs ---------------- */
-
-.tabs { display: flex; gap: 20px; flex-wrap: wrap; padding: 10px 0; }
-
-.tab {
-  font-size: 13px;
-  font-weight: 500;
-  padding: 4px 0;
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--ink);
-  opacity: 0.7;
-  transition: color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
-}
-
-.tab:hover {
-  opacity: 1;
-  color: var(--terracotta);
-}
-
-.tab.active {
-  color: var(--terracotta);
-  border-bottom-color: var(--terracotta);
-  opacity: 1;
-}
-
 .period-toggle { display: flex; gap: 6px; font-size: 12px; opacity: 0.7; padding-bottom: 12px; }
 .period-toggle button {
   background: none; border: none; font: inherit; color: inherit; opacity: 0.6; cursor: pointer; padding: 0;
@@ -422,7 +395,6 @@ img { max-width: 100%; display: block; }
 
 .lb-rank { font-size: 15px; font-weight: 600; color: var(--ink-muted); min-width: 18px; }
 
-.lb-thumb { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; }
 
 .lb-info { flex: 1; min-width: 0; }
 .lb-name-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }

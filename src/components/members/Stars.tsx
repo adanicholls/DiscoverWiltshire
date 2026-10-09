@@ -20,7 +20,7 @@ export default function Stars({ rating, size = 16 }: { rating: number; size?: nu
 
   return (
     <span className="stars" role="img" aria-label={`${rating} out of 5 stars`} style={{ position: "relative", display: "inline-block" }}>
-      <span style={{ color: "#444746", display: "inline-flex" }}>{row}</span>
+      <span style={{ color: "var(--ph-outline, #444746)", display: "inline-flex" }}>{row}</span>
       <span style={{ color: "#fbbc04", position: "absolute", inset: 0, width: `${percent}%`, overflow: "hidden", display: "flex" }}>
         <span style={{ flex: "none" }}>{row}</span>
       </span>

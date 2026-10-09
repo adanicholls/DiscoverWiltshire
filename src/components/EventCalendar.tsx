@@ -7,8 +7,10 @@ import { formatEventDate, groupEventsByMonth } from "@/lib/eventDate";
  * block, the event's details, and a ticket/details link if one was given -
  * the same shape as Live Nation's event calendar, in this site's own
  * design language. */
-export default async function EventCalendar({ town }: { town?: string }) {
-  const events = await Store.getUpcomingEvents(undefined, town);
+export default async function EventCalendar({ town, excludeId }: { town?: string; excludeId?: string }) {
+  // The featured event has its own banner above this list, so it's left out
+  // here rather than appearing twice.
+  const events = (await Store.getUpcomingEvents(undefined, town)).filter((ev) => ev.id !== excludeId);
   const townLabel = town ? TOWN_LABELS[town] : undefined;
 
   if (events.length === 0) {

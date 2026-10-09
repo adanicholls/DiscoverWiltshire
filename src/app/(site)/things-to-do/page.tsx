@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import CategoryTabs from "@/components/CategoryTabs";
 import Leaderboard from "@/components/Leaderboard";
 import PageSidebar from "@/components/PageSidebar";
 import { CATEGORY_LABELS_CORE, TOWN_LABELS } from "@/lib/data";
@@ -23,8 +22,6 @@ export default async function ThingsToDoPage({ searchParams }: PageProps<"/thing
               <p className="page-subtitle">
                 Activities, days out, and ways to spend a weekend {townLabel ? `near ${townLabel}` : ""}, ranked by locals.
               </p>
-
-              <CategoryTabs active="/things-to-do" />
             </div>
 
             <div className="period-toggle">

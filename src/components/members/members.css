@@ -6,10 +6,10 @@
 
 .auth-card { padding: 8px 0 40px; }
 .auth-note { margin: 0 0 22px; font-size: 14px; line-height: 1.6; color: var(--ink-muted); }
-.auth-error { margin: 0 0 14px; font-size: 13px; line-height: 1.5; color: #ff8a80; }
+.auth-error { margin: 0 0 14px; font-size: 13px; line-height: 1.5; color: var(--ph-bad); }
 .auth-submit { width: 100%; justify-content: center; padding: 12px; }
 .auth-switch { margin: 18px 0 0; font-size: 13px; color: var(--ink-muted); text-align: center; }
-.auth-switch a, .auth-note a, .auth-check a { color: #8ab4f8; text-decoration: underline; }
+.auth-switch a, .auth-note a, .auth-check a { color: var(--ph-link); text-decoration: underline; }
 
 .auth-check { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 18px; font-size: 13px; line-height: 1.5; color: var(--ink-muted); cursor: pointer; }
 .auth-check input { margin-top: 3px; flex: none; width: auto; }
@@ -40,7 +40,7 @@
   margin: 0 0 20px;
   padding: 14px 18px;
   border-radius: var(--radius);
-  border: 1px solid #1f6b4a;
+  border: 1px solid var(--ph-good);
   background: rgba(23, 178, 106, 0.12);
   font-size: 14px;
 }
@@ -50,7 +50,7 @@
   padding: 16px 18px;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: #1a1a1c;
+  background: var(--ph-card);
 }
 .member-review-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .member-review-biz { font-size: 15px; font-weight: 500; }
@@ -60,13 +60,13 @@
 .member-review-foot { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
 
 .status-pill { padding: 2px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
-.status-pending { background: rgba(217, 164, 65, 0.18); color: #f0c46c; }
-.status-approved { background: rgba(23, 178, 106, 0.16); color: #6fdca5; }
-.status-declined { background: rgba(217, 45, 32, 0.18); color: #ff8a80; }
+.status-pending { background: rgba(217, 164, 65, 0.18); color: var(--ph-warn); }
+.status-approved { background: rgba(23, 178, 106, 0.16); color: var(--ph-good); }
+.status-declined { background: rgba(217, 45, 32, 0.18); color: var(--ph-bad); }
 
 .bio-form textarea { min-height: 90px; }
 .bio-form-row { display: flex; align-items: center; gap: 12px; }
-.bio-saved { font-size: 13px; color: #6fdca5; }
+.bio-saved { font-size: 13px; color: var(--ph-good); }
 
 /* ---------- review form on a business page ---------- */
 
@@ -74,18 +74,18 @@
   padding: 14px 18px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  background: #1a1a1c;
+  background: var(--ph-card);
   font-size: 14px;
   line-height: 1.6;
 }
-.review-note a { color: #8ab4f8; text-decoration: underline; }
+.review-note a { color: var(--ph-link); text-decoration: underline; }
 .review-hint { font-size: 13px; color: var(--ink-muted); }
 
 .review-form {
   padding: 20px;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: #1a1a1c;
+  background: var(--ph-card);
 }
 .review-form-title { margin: 0 0 14px; font-size: 16px; font-weight: 500; }
 .review-form-actions { display: flex; gap: 10px; }
@@ -98,11 +98,11 @@
   padding: 0 2px;
   font-size: 30px;
   line-height: 1;
-  color: #444746;
+  color: var(--ph-outline);
   cursor: pointer;
 }
 .review-star.on { color: #fbbc04; }
-.review-star:focus-visible { outline: 2px solid #8ab4f8; border-radius: 4px; }
+.review-star:focus-visible { outline: 2px solid var(--ph-link); border-radius: 4px; }
 
 /* ---------- report a review ---------- */
 
@@ -117,7 +117,7 @@
 }
 .report-link:hover { color: var(--ink); }
 .report-note { font-size: 12px; color: var(--ink-muted); }
-.report-note a { color: #8ab4f8; text-decoration: underline; }
+.report-note a { color: var(--ph-link); text-decoration: underline; }
 .report-form { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 4px; }
 .report-form input[type="text"] { flex: 1; min-width: 180px; width: auto; padding: 7px 12px; }
 .report-form .btn { padding: 7px 14px; }
@@ -128,11 +128,11 @@
 .legal h2 { margin: 28px 0 8px; font-size: 18px; font-weight: 500; }
 .legal p, .legal li { font-size: 14px; line-height: 1.7; color: var(--ink-muted); }
 .legal ul { padding-left: 20px; }
-.legal a { color: #8ab4f8; text-decoration: underline; }
+.legal a { color: var(--ph-link); text-decoration: underline; }
 .legal-draft {
   margin: 0 0 22px;
   padding: 12px 16px;
-  border-left: 3px solid #f0c46c;
+  border-left: 3px solid var(--ph-warn);
   background: rgba(217, 164, 65, 0.1);
   font-size: 13px;
   line-height: 1.6;

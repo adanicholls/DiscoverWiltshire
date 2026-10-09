@@ -1,0 +1,85 @@
+/* The featured / sponsored event banner at the top of /whats-on. The same
+   gradient-outline-on-dark treatment as the homepage hero card. */
+
+.fe {
+  position: relative;
+  margin: 0 0 36px;
+  padding: 2px;
+  border-radius: 28px;
+  background: linear-gradient(120deg, #ff6154 0%, #d946ef 58%, #7c5cff 100%);
+  box-shadow: 0 0 60px rgba(217, 70, 239, 0.18), 0 0 120px rgba(255, 97, 84, 0.1);
+}
+
+.fe-inner {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  border-radius: 26px;
+  background: var(--ph-card);
+}
+
+/* The image side. Fills its column whatever the picture's shape, cropped to
+   cover; the colour behind it shows while it loads. */
+.fe-media { position: relative; min-height: 340px; }
+
+.fe-label {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  background: rgba(19, 19, 20, 0.82);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.fe-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 36px 36px 36px 32px;
+}
+.fe-body::before {
+  content: "";
+  position: absolute;
+  inset: -30% -25% auto auto;
+  width: 70%;
+  height: 90%;
+  background: radial-gradient(closest-side, rgba(124, 92, 255, 0.26), transparent);
+  pointer-events: none;
+}
+.fe-body > * { position: relative; }
+
+.fe-dates {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--ph-link), #d946ef 55%, #ff6154);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.fe-title { margin: 0; font-size: 34px; font-weight: 400; line-height: 1.12; letter-spacing: -0.9px; color: var(--ph-strong); }
+.fe-where { margin: 10px 0 0; font-size: 14px; color: var(--ink-muted); }
+.fe-desc { margin: 14px 0 0; font-size: 14px; line-height: 1.65; color: var(--ink); opacity: 0.85; }
+.fe-price { margin: 12px 0 0; font-size: 13px; font-weight: 500; color: var(--ph-link); }
+.fe-cta { margin-top: 22px; padding: 12px 22px; font-size: 14px; }
+
+@media (max-width: 860px) {
+  .fe { border-radius: 22px; }
+  .fe-inner { grid-template-columns: minmax(0, 1fr); border-radius: 20px; }
+  .fe-media { min-height: 0; aspect-ratio: 16 / 10; }
+  .fe-body { padding: 24px 22px 28px; }
+  .fe-title { font-size: 28px; }
+}

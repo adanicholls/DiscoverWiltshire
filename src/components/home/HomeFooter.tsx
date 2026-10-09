@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CATEGORY_LABELS_CORE, TOWNS } from "@/lib/data";
+import ThemeToggle from "./ThemeToggle";
 
 /** Product Hunt's homepage ends in a block of category links; this is the
  * Discover Wiltshire version - categories, every town, and the site pages. */
@@ -34,7 +35,10 @@ export default function HomeFooter() {
         <Link href="/terms">Terms</Link>
         <Link href="/privacy">Privacy</Link>
       </div>
-      <p className="ph-footer-note">Discover Wiltshire — the only list you&apos;ll need</p>
+      <div className="ph-footer-bottom">
+        <p className="ph-footer-note">Discover Wiltshire — the only list you&apos;ll need</p>
+        <ThemeToggle />
+      </div>
     </footer>
   );
 }
