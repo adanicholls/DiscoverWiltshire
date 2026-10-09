@@ -1,0 +1,29 @@
+/* Trade category icons: a soft rounded tile holding a Lucide line icon in the
+   brand coral. Uses the site's theme tokens, so it follows light and dark. */
+
+.trade-icon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: inline-grid;
+  place-items: center;
+  background: var(--surface-muted);
+  color: var(--terracotta);
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+/* On the hub, the whole card is the link: the tile fills with the brand
+   gradient while it's hovered. */
+.trade-card { display: flex; align-items: center; gap: 14px; }
+.trade-card-text { min-width: 0; }
+.trade-card:hover .trade-icon,
+.trade-card:focus-visible .trade-icon {
+  background: linear-gradient(120deg, #ff6154 0%, #d946ef 58%, #7c5cff 100%);
+  color: #fff;
+}
+
+/* The big version beside a trade page's title. */
+.trade-icon--lg { width: 56px; height: 56px; border-radius: 16px; }
+.trade-title-row { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
+.trade-title-row .page-title { margin: 0; }

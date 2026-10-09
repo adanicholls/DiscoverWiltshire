@@ -60,6 +60,10 @@ Every public page has a light and a dark version, switched with the **Light / Da
 
 How it works: the shell's colours are named variables in `src/components/home/home.css` — dark values on `.ph-home`, light values on `html[data-theme="light"] .ph-home`. Shared site tokens (`--bg`, `--ink`, `--border`…) are re-pointed in the same two blocks, so most components follow automatically. **When writing new styles inside the shell, use these variables (`--ph-card`, `--ph-text`, `--ph-line`, `--ph-link`, `--ph-hover`…) rather than literal colours**, or the light theme will show it.
 
+## Trade icons
+
+Each trade category shows an icon on the `/trades` cards and beside the title on its own page. They come from [Lucide](https://lucide.dev) (ISC licence, via the `lucide-react` package) and are chosen by category id in `src/components/trades/TradeIcon.tsx`. Trade categories are added in `/admin/categories`, so a new one shows a generic briefcase until you add a line to that file's `ICONS` map (pick a name from lucide.dev and import it).
+
 ## Design system
 
 Defined in `src/app/globals.css` as CSS custom properties:

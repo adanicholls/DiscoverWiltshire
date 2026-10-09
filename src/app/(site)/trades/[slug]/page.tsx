@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Leaderboard from "@/components/Leaderboard";
 import PageSidebar from "@/components/PageSidebar";
+import TradeIcon from "@/components/trades/TradeIcon";
+import "@/components/trades/trades.css";
 import { Store } from "@/lib/store";
 import { TOWN_LABELS } from "@/lib/data";
 
@@ -52,10 +54,13 @@ export default async function TradeCategoryPage({ params, searchParams }: PagePr
         <div className="home-layout home-layout--single-row home-layout--titled">
           <div className="home-main">
             <div className="page-head">
-              <h1 className="page-title">
-                {label}
-                {townLabel ? ` near ${townLabel}` : ""}, ranked
-              </h1>
+              <div className="trade-title-row">
+                <TradeIcon id={slug} size={28} className="trade-icon--lg" />
+                <h1 className="page-title">
+                  {label}
+                  {townLabel ? ` near ${townLabel}` : ""}, ranked
+                </h1>
+              </div>
               <p className="page-subtitle">
                 {label} {townLabel ? `near ${townLabel}` : "across Wiltshire"}, ranked by the people who&apos;ve
                 actually hired them.
