@@ -54,6 +54,12 @@ Everything lives in Supabase — see `supabase/migrations/` for the full schema 
 
 `src/lib/store.ts` is the single place that talks to Supabase for the public site (reads, votes, submissions) — same function shapes throughout, so components don't need to know it's a network call. The admin area uses its own service-role client (`src/lib/supabase-admin.ts`) since it needs to bypass RLS.
 
+## Light and dark themes
+
+Every public page has a light and a dark version, switched with the **Light / Dark** toggle in the footer. Dark is the default; the choice is remembered in the browser (`localStorage` key `dw-theme`) and applied by a tiny inline script in `src/app/layout.tsx` before the page paints, so there's no flash of the wrong theme. The admin area isn't themed.
+
+How it works: the shell's colours are named variables in `src/components/home/home.css` — dark values on `.ph-home`, light values on `html[data-theme="light"] .ph-home`. Shared site tokens (`--bg`, `--ink`, `--border`…) are re-pointed in the same two blocks, so most components follow automatically. **When writing new styles inside the shell, use these variables (`--ph-card`, `--ph-text`, `--ph-line`, `--ph-link`, `--ph-hover`…) rather than literal colours**, or the light theme will show it.
+
 ## Design system
 
 Defined in `src/app/globals.css` as CSS custom properties:

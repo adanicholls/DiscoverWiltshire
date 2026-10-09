@@ -20,9 +20,20 @@ export const metadata: Metadata = {
     "The friend who knows Wiltshire best — every pub, stay, activity, shop, and local trade in the county, ranked by the people who actually use them.",
 };
 
+// Runs before the page first paints and puts the visitor's saved light/dark
+// choice on <html data-theme="...">, so there is no flash of the wrong theme.
+// With no saved choice nothing is set and the site is dark, its default. The
+// footer toggle (components/home/ThemeToggle.tsx) changes and saves the choice.
+const THEME_SCRIPT = `try{var t=localStorage.getItem("dw-theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={inter.variable}>
+    // suppressHydrationWarning: the script above may add data-theme to <html>
+    // before React hydrates, which is intentional.
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body>{children}</body>
     </html>
   );

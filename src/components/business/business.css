@@ -50,7 +50,7 @@
   align-items: center;
   height: 32px;
   padding: 0 14px;
-  border: 1px solid #444746;
+  border: 1px solid var(--ph-outline);
   border-radius: 9999px;
   font-size: 13px;
   font-weight: 500;
@@ -64,7 +64,7 @@
   padding: 16px;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: #1a1a1c;
+  background: var(--ph-card);
 }
 .bp2-avatar {
   flex: none;
@@ -89,7 +89,7 @@
   padding: 18px 20px;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background: #1a1a1c;
+  background: var(--ph-card);
 }
 .bp2-card-title { margin: 0 0 14px; font-size: 16px; font-weight: 500; }
 .bp2-card-link { display: inline-block; margin-top: 14px; font-size: 13px; font-weight: 500; color: var(--terracotta); }
@@ -98,7 +98,7 @@
 .bp2-rows { margin: 0; display: flex; flex-direction: column; gap: 14px; }
 .bp2-rows dt { font-size: 12px; color: var(--ink-muted); margin-bottom: 2px; }
 .bp2-rows dd { margin: 0; font-size: 14px; line-height: 1.5; word-break: break-word; }
-.bp2-rows a { color: #8ab4f8; }
+.bp2-rows a { color: var(--ph-link); }
 .bp2-rows a:hover { text-decoration: underline; }
 
 /* "At a glance": label on the left, value on the right. */
