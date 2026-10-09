@@ -711,15 +711,14 @@ a.ph-thread:hover .ph-thread-title { color: var(--ph-link); text-decoration: und
 .ph-theme-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  width: 34px;
   height: 30px;
-  padding: 0 14px;
+  padding: 0;
   border: 0;
   border-radius: 9999px;
   background: transparent;
   color: var(--ph-text-2);
-  font-size: 13px;
-  font-weight: 500;
   cursor: pointer;
 }
 .ph-theme-btn:hover { background: var(--ph-hover); }

@@ -44,19 +44,21 @@ export default function ThemeToggle() {
         type="button"
         className={"ph-theme-btn" + (theme === "light" ? " active" : "")}
         aria-pressed={theme === "light"}
+        aria-label="Light theme"
+        title="Light theme"
         onClick={() => applyTheme("light")}
       >
-        <SunIcon size={16} />
-        Light
+        <SunIcon size={18} />
       </button>
       <button
         type="button"
         className={"ph-theme-btn" + (theme === "dark" ? " active" : "")}
         aria-pressed={theme === "dark"}
+        aria-label="Dark theme"
+        title="Dark theme"
         onClick={() => applyTheme("dark")}
       >
-        <MoonIcon size={16} />
-        Dark
+        <MoonIcon size={18} />
       </button>
     </div>
   );
